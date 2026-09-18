@@ -19,8 +19,8 @@ export class AuthController {
     const result = await this.authService.login(loginDto);
     (res as any).cookie('accessToken', result.accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true, // Always true for cross-domain on Vercel
+      sameSite: 'none', // Crucial for cross-domain cookies!
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return result;
@@ -28,7 +28,11 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
-    (res as any).clearCookie('accessToken');
+    (res as any).clearCookie('accessToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+    });
     return { success: true, message: 'Logged out successfully' };
   }
 

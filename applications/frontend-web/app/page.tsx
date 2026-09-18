@@ -3,9 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from './context/AuthContext';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#F2EDE7] text-[#1F1916] font-sans antialiased selection:bg-[#EADBCE] overflow-x-hidden">
@@ -30,18 +33,64 @@ export default function Home() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-xs font-bold text-[#1F1916] hover:opacity-80 px-4 py-2"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/register"
-              className="bg-[#334234] text-white text-xs font-bold px-6 py-2.5 rounded-full hover:bg-[#253226] transition-all shadow-sm flex items-center gap-1.5"
-            >
-              Get Started →
-            </Link>
+            {user ? (
+              <div className="relative">
+                <div 
+                  className="flex items-center gap-3 bg-transparent cursor-pointer hover:opacity-80 transition-opacity"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                >
+                  <div className="w-9 h-9 rounded-full overflow-hidden border border-[#E0E2DF]">
+                    <img src="/images/veyra_hero_velera_portrait.png" alt="Profile" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[13px] font-bold text-[#1F1916]">{user?.email?.split('@')[0] || 'User'}</span>
+                    <svg className={`w-3.5 h-3.5 text-[#869188] transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
+                </div>
+
+                {isProfileOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)}></div>
+                    <div className="absolute right-0 mt-3 w-56 bg-[#F8F5F0] rounded-[20px] shadow-lg border border-[#EADCD4] py-2 z-50 overflow-hidden">
+                      <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-[#1F2922] hover:bg-white transition-colors" onClick={() => setIsProfileOpen(false)}>
+                        <span>📊</span> Dashboard
+                      </Link>
+                      <Link href="/profile" className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-[#1F2922] hover:bg-white transition-colors" onClick={() => setIsProfileOpen(false)}>
+                        <span>👤</span> Profile & Health
+                      </Link>
+                      <Link href="/settings" className="flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-[#1F2922] hover:bg-white transition-colors" onClick={() => setIsProfileOpen(false)}>
+                        <span>⚙️</span> Settings
+                      </Link>
+                      <div className="border-t border-[#EADCD4] my-2"></div>
+                      <button 
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          logout();
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] font-medium text-[#9A4B3E] hover:bg-red-50 transition-colors text-left"
+                      >
+                        <span>🚪</span> Sign Out
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-xs font-bold text-[#1F1916] hover:opacity-80 px-4 py-2"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/register"
+                  className="bg-[#334234] text-white text-xs font-bold px-6 py-2.5 rounded-full hover:bg-[#253226] transition-all shadow-sm flex items-center gap-1.5"
+                >
+                  Get Started →
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -78,16 +127,35 @@ export default function Home() {
               </Link>
             </nav>
             <div className="pt-4 border-t border-[#EADCD4] flex flex-col space-y-3">
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-center font-medium text-gray-800">
-                Log in
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-center bg-[#334234] text-white py-3 rounded-full font-medium shadow"
-              >
-                Get Started →
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="text-center font-medium text-gray-800">
+                    Dashboard
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="text-center font-medium text-[#9A4B3E]"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)} className="text-center font-medium text-gray-800">
+                    Log in
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-center bg-[#334234] text-white py-3 rounded-full font-medium shadow"
+                  >
+                    Get Started →
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
