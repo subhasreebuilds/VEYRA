@@ -25,6 +25,7 @@ export default async (req: any, res: any) => {
     app.use(cookieParser());
 
     await app.init();
+    
     cachedApp = app;
   }
   
