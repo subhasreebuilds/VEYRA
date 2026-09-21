@@ -14,12 +14,7 @@ export default function Dashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [habits, setHabits] = useState([
-    { id: 'hydration', title: 'Hydration Intake', subtitle: 'Target: 2.2L water', icon: '💧', done: true },
-    { id: 'skincare', title: 'Morning Skincare', subtitle: 'Cleanser + Vitamin C + SPF', icon: '✨', done: true },
-    { id: 'nutrition', title: 'Nutrient-Rich Breakfast', subtitle: 'Protein & healthy fats', icon: '🥗', done: false },
-    { id: 'movement', title: '20 Min Movement', subtitle: 'Light cardio or stretch', icon: '🧘', done: false },
-  ]);
+  const [habits, setHabits] = useState<any[]>([]);
 
   const toggleHabit = (id: string) => {
     setHabits(prev => prev.map(h => h.id === id ? { ...h, done: !h.done } : h));
@@ -34,6 +29,9 @@ export default function Dashboard() {
           return;
         }
         setData(response);
+        if (response.habits) {
+          setHabits(response.habits);
+        }
       } catch (err) {
         setError("We couldn't load your profile.");
       } finally {
@@ -186,20 +184,30 @@ export default function Dashboard() {
             <span className="text-2xl">✨</span>
           </div>
 
-          <div className="my-auto py-2 flex items-center gap-4">
-            <div className="text-5xl font-serif font-bold tracking-tight text-[#1F1916]">
-              84<span className="text-lg text-[#8A7970] font-sans font-normal">/100</span>
+          {data?.skinHealth ? (
+            <div className="my-auto py-2 flex items-center gap-4">
+              <div className="text-5xl font-serif font-bold tracking-tight text-[#1F1916]">
+                {data.skinHealth.score}<span className="text-lg text-[#8A7970] font-sans font-normal">/100</span>
+              </div>
+              <div className="space-y-1">
+                <div className="text-xs font-bold text-emerald-700">{data.skinHealth.summary}</div>
+                <div className="text-[11px] text-[#6B5A52]">{data.skinHealth.details}</div>
+              </div>
             </div>
-            <div className="space-y-1">
-              <div className="text-xs font-bold text-emerald-700">Good Barrier Function</div>
-              <div className="text-[11px] text-[#6B5A52]">Hydration: High • Texture: Smooth</div>
+          ) : (
+            <div className="my-auto py-6 text-center space-y-2">
+              <div className="text-3xl opacity-50">📸</div>
+              <p className="text-sm font-bold text-[#6B5A52]">No scan data yet</p>
+              <p className="text-[11px] text-[#8A7970]">Complete your first AI scan to unlock your personalized skin index.</p>
             </div>
-          </div>
+          )}
 
           <div className="pt-4 border-t border-[#E8DCD2] flex justify-between items-center text-xs">
-            <span className="text-[#6B5A52] text-[11px]">Last scanned today</span>
+            <span className="text-[#6B5A52] text-[11px]">
+              {data?.skinHealth?.lastScan ? `Last scanned ${data.skinHealth.lastScan}` : 'Action required'}
+            </span>
             <Link href="/skin-analysis" className="font-bold text-[#334234] hover:underline">
-              New scan →
+              {data?.skinHealth ? 'New scan →' : 'Start Scan →'}
             </Link>
           </div>
         </div>
@@ -213,39 +221,51 @@ export default function Dashboard() {
               </span>
               <h3 className="text-xl font-serif font-bold text-[#1F1916]">Today's Habits</h3>
             </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#E8EFE6] text-[#334234] border border-[#708264]/20">
-              {completedCount} / {habits.length} Done
-            </span>
+            {habits.length > 0 && (
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#E8EFE6] text-[#334234] border border-[#708264]/20">
+                {completedCount} / {habits.length} Done
+              </span>
+            )}
           </div>
 
-          <ul className="space-y-2.5 my-auto">
-            {habits.map((habit) => (
-              <li 
-                key={habit.id}
-                onClick={() => toggleHabit(habit.id)}
-                className={`flex items-center justify-between p-2.5 rounded-2xl border transition-all cursor-pointer ${
-                  habit.done 
-                    ? 'bg-[#FAF7F2] border-[#E8DCD2]/60 text-[#1F1916]' 
-                    : 'bg-white border-[#E8DCD2] text-[#6B5A52] hover:bg-[#FAF7F2]'
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${
-                    habit.done ? 'bg-[#334234] text-white' : 'border border-[#E8DCD2] text-transparent'
-                  }`}>
-                    ✓
-                  </div>
-                  <div>
-                    <p className={`text-xs font-bold leading-tight ${habit.done ? 'line-through opacity-70' : ''}`}>
-                      {habit.title}
-                    </p>
-                    <p className="text-[10px] text-[#8A7970]">{habit.subtitle}</p>
-                  </div>
-                </div>
-                <span className="text-sm">{habit.icon}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="my-auto py-2">
+            {habits.length > 0 ? (
+              <ul className="space-y-2.5">
+                {habits.map((habit) => (
+                  <li 
+                    key={habit.id}
+                    onClick={() => toggleHabit(habit.id)}
+                    className={`flex items-center justify-between p-2.5 rounded-2xl border transition-all cursor-pointer ${
+                      habit.done 
+                        ? 'bg-[#FAF7F2] border-[#E8DCD2]/60 text-[#1F1916]' 
+                        : 'bg-white border-[#E8DCD2] text-[#6B5A52] hover:bg-[#FAF7F2]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${
+                        habit.done ? 'bg-[#334234] text-white' : 'border border-[#E8DCD2] text-transparent'
+                      }`}>
+                        ✓
+                      </div>
+                      <div>
+                        <p className={`text-xs font-bold leading-tight ${habit.done ? 'line-through opacity-70' : ''}`}>
+                          {habit.title}
+                        </p>
+                        <p className="text-[10px] text-[#8A7970]">{habit.subtitle}</p>
+                      </div>
+                    </div>
+                    <span className="text-sm">{habit.icon}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-center space-y-2 py-4">
+                <div className="text-3xl opacity-50">🌿</div>
+                <p className="text-sm font-bold text-[#6B5A52]">No rituals set</p>
+                <p className="text-[11px] text-[#8A7970]">Your personalized daily habits will appear here once configured.</p>
+              </div>
+            )}
+          </div>
 
           <div className="pt-3 border-t border-[#E8DCD2] text-center">
             <Link href="/grooming" className="text-xs font-bold text-[#334234] hover:underline">
