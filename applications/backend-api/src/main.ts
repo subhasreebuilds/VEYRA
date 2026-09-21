@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 // Force Vercel rebuild to include vercel.json changes
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as cookieParser from 'cookie-parser';
+import cookieParser = require('cookie-parser');
 import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 
