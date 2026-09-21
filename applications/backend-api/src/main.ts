@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 // Force Vercel rebuild to include vercel.json changes
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
 import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 
@@ -27,7 +27,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: true,
+      forbidNonWhitelisted: false, // Temporarily disabled to fix caching issues with new DTO fields
       transform: true,
     }),
   );
