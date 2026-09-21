@@ -37,16 +37,13 @@ function LoginForm() {
 
   return (
     <div className="mx-auto w-full max-w-md">
-      {/* Back to Home & Mobile Logo */}
-      <div className="flex items-center justify-between mb-8">
+      {/* Back to Home Link */}
+      <div className="flex items-center justify-between mb-6 lg:mb-8">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6B5A52] hover:text-[#1F1916] transition-colors py-1.5 px-3 rounded-full hover:bg-[#EADBCE]/50 border border-transparent hover:border-[#E8DCD2]"
         >
           <span>←</span> Back to home
-        </Link>
-        <Link href="/" className="lg:hidden text-2xl font-serif font-bold tracking-tight text-[#1F1916]">
-          VEYRA
         </Link>
       </div>
 
@@ -157,9 +154,9 @@ function LoginForm() {
 
 export default function Login() {
   return (
-    <div className="min-h-screen flex bg-[#F8F5F0] font-sans text-[#1F1916] antialiased selection:bg-[#EADBCE]">
-      {/* Left Column: Full Bleed High-Definition Image Visual */}
-      <div className="hidden lg:flex lg:w-1/2 relative min-h-screen p-12 flex-col justify-between overflow-hidden">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-[#F8F5F0] font-sans text-[#1F1916] antialiased selection:bg-[#EADBCE]">
+      {/* Left/Top Column: High-Definition Image Visual */}
+      <div className="flex lg:w-1/2 relative min-h-[40vh] sm:min-h-[50vh] lg:min-h-screen p-8 lg:p-12 flex-col justify-between overflow-hidden">
         <Image
           src="/images/veyra_hero_silk_robe.png"
           alt="Veyra Luxury Wellness"
@@ -178,14 +175,14 @@ export default function Login() {
         </div>
 
         {/* Bottom-left Content / Floating Glass Card */}
-        <div className="relative z-10 mt-auto max-w-md space-y-6 text-left">
+        <div className="relative z-10 mt-auto max-w-md space-y-4 lg:space-y-6 text-left pt-12 lg:pt-0">
           {/* Glassmorphism Card */}
-          <div className="bg-white/15 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-white/25 shadow-2xl text-white space-y-3">
+          <div className="bg-white/15 backdrop-blur-md p-5 sm:p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-white/25 shadow-2xl text-white space-y-2 lg:space-y-3">
             <div className="flex items-center gap-2">
               <span className="text-amber-300 text-sm">🌿</span>
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-200">Welcome Back Portal</span>
+              <span className="text-[10px] lg:text-xs font-bold uppercase tracking-wider text-amber-200">Welcome Back Portal</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-white leading-tight">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-serif font-bold text-white leading-tight">
               Your personal wellness companion.
             </h2>
             <p className="text-xs sm:text-sm text-white/85 leading-relaxed font-medium">
@@ -195,8 +192,8 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Right Column: Authentication Form with Suspense boundary */}
-      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-20 xl:px-28 py-12 bg-[#F8F5F0]">
+      {/* Right/Bottom Column: Authentication Form with Suspense boundary */}
+      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-20 xl:px-28 py-10 lg:py-12 bg-[#F8F5F0]">
         <Suspense fallback={<div className="text-center text-sm text-[#6B5A52]">Loading...</div>}>
           <LoginForm />
         </Suspense>
