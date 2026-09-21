@@ -16,14 +16,8 @@ export default function Home() {
       <header className="sticky top-0 z-50 w-full bg-[#F8F5F0]/95 backdrop-blur-md border-b border-[#EADCD4]/40 py-4">
         <div className="veyra-container flex items-center justify-between">
           <div className="flex items-center gap-12">
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/images/veyra-logo-serif.jpg"
-                alt="Veyra Logo"
-                width={120}
-                height={120}
-                className="object-contain rounded-lg drop-shadow-sm"
-              />
+            <Link href="/" className="text-2xl font-serif tracking-tight font-bold text-[#1F1916]">
+              VEYRA
             </Link>
             <nav className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-wide text-[#5C504A]">
               <Link href="#features" className="hover:text-[#1F1916] transition-colors">
