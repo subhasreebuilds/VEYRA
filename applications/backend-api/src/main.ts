@@ -27,7 +27,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: false, // Temporarily disabled to fix caching issues with new DTO fields
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
