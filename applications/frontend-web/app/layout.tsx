@@ -18,6 +18,15 @@ import { AuthProvider } from "./context/AuthContext";
 export const metadata: Metadata = {
   title: "Veyra",
   description: "Your personal grooming & wellness companion.",
+  appleWebApp: {
+    capable: true,
+    title: "Veyra",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport = {
+  themeColor: "#F8F5F0",
 };
 
 export default function RootLayout({
