@@ -88,14 +88,8 @@ export default function Register() {
         
         {/* Header / Logo */}
         <div className="relative z-10">
-          <Link href="/" className="inline-block relative w-32 h-32 md:w-40 md:h-40 hover:scale-105 transition-transform duration-300">
-            <Image
-              src="/images/veyra-logo-serif.jpg"
-              alt="Veyra Logo"
-              fill
-              className="object-contain drop-shadow-lg rounded-2xl"
-              priority
-            />
+          <Link href="/" className="inline-block text-3xl font-serif font-bold tracking-tight text-white drop-shadow-md">
+            VEYRA
           </Link>
         </div>
 

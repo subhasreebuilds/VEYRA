@@ -139,18 +139,14 @@ export default function Onboarding() {
       </div>
 
       {/* Right Column: Onboarding Form */}
-      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-20 xl:px-28 py-12 bg-[#F8F5F0] overflow-y-auto relative">
+      <div className="flex-1 flex flex-col justify-center px-6 sm:px-12 lg:px-20 xl:px-28 py-12 bg-[#F8F5F0] overflow-y-auto">
         <div className="mx-auto w-full max-w-xl">
           
           {/* Mobile Header / Logo */}
-          <div className="absolute top-8 left-8 sm:top-12 sm:left-12 z-10 flex items-center gap-3">
-            <Image
-              src="/images/veyra-logo-serif.jpg"
-              alt="Veyra Logo"
-              width={100}
-              height={100}
-              className="object-contain rounded-xl drop-shadow-lg"
-            />
+          <div className="lg:hidden mb-8 flex justify-center">
+             <Link href="/" className="text-3xl font-serif font-bold tracking-tight text-[#1F1916]">
+                VEYRA
+             </Link>
           </div>
 
           <div className="mb-10 text-center sm:text-left space-y-3">
