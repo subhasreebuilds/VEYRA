@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Platform, Text } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 
 const COLOR_PRIMARY = '#2D3A2F';
 const COLOR_MUTED = '#A09289';
@@ -63,11 +63,30 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
   );
 }
 
+function GlobalHeader() {
+  return (
+    <SafeAreaView edges={['top']} style={{ backgroundColor: COLOR_PRIMARY }}>
+      <View style={[styles.header, { backgroundColor: COLOR_PRIMARY, paddingBottom: 8, paddingTop: Platform.OS === 'android' ? 8 : 0 }]}>
+        <View style={styles.logoRow}>
+          <Text style={[styles.logoText, { color: '#FFF' }]}>Veyra</Text>
+          <Ionicons name="leaf" size={12} color="#A3B899" style={{ marginLeft: 2, marginTop: -6 }} />
+        </View>
+        <TouchableOpacity>
+          <Ionicons name="notifications" size={20} color="#FFF" />
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
+}
+
 export default function TabsLayout() {
   return (
     <Tabs 
       tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ 
+        header: () => <GlobalHeader />,
+        headerShown: true,
+      }}
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="skin" />
@@ -79,6 +98,24 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    zIndex: 10,
+  },
+  logoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logoText: {
+    fontFamily: 'serif',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLOR_PRIMARY,
+  },
   tabBarContainer: {
     flexDirection: 'row',
     backgroundColor: COLOR_BG,
