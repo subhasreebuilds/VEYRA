@@ -321,10 +321,10 @@ const styles = StyleSheet.create({
   },
 
   recsScroll: {
-    paddingLeft: 24,
   },
   recsContent: {
-    paddingRight: 48,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     gap: 12,
   },
   recCard: {
