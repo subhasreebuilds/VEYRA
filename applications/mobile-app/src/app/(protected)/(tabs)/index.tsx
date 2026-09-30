@@ -68,17 +68,6 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: COLOR_PRIMARY, paddingBottom:8, paddingTop: Platform.OS === 'android' ? 8 : 0 }]}>
-        <View style={styles.logoRow}>
-          <Text style={[styles.logoText, { color: '#FFF' }]}>Veyra</Text>
-          <Ionicons name="leaf" size={12} color="#A3B899" style={{ marginLeft: 2, marginTop: -6 }} />
-        </View>
-        <TouchableOpacity>
-          <Ionicons name="notifications" size={20} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-
       <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: COLOR_BG }} contentContainerStyle={styles.scrollContent}>
 
         {/* Greeting Section */}
@@ -168,28 +157,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLOR_PRIMARY,
-    paddingTop: Platform.OS === 'android' ? 40 : 0,
+    // paddingTop: Platform.OS === 'android' ? 40 : 0,
   },
   scrollContent: {
     paddingBottom: 40,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    zIndex: 10,
-  },
-  logoRow: {
-    flexDirection: 'row',
-  },
-  logoText: {
-    fontFamily: 'serif',
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: COLOR_PRIMARY,
-  },
+
   
   greetingContainer: {
     paddingHorizontal: 24,
