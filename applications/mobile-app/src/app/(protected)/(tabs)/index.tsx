@@ -68,22 +68,22 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoRow}>
-            <Text style={styles.logoText}>Veyra</Text>
-            <Ionicons name="leaf" size={16} color="#708264" style={{ marginLeft: 2, marginTop: -10 }} />
-          </View>
-          <TouchableOpacity>
-            <Ionicons name="notifications" size={24} color={COLOR_PRIMARY} />
-          </TouchableOpacity>
+      {/* Header */}
+      <View style={[styles.header, { backgroundColor: COLOR_PRIMARY, paddingBottom:8, paddingTop: Platform.OS === 'android' ? 8 : 0 }]}>
+        <View style={styles.logoRow}>
+          <Text style={[styles.logoText, { color: '#FFF' }]}>Veyra</Text>
+          <Ionicons name="leaf" size={12} color="#A3B899" style={{ marginLeft: 2, marginTop: -6 }} />
         </View>
+        <TouchableOpacity>
+          <Ionicons name="notifications" size={20} color="#FFF" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} style={{ backgroundColor: COLOR_BG }} contentContainerStyle={styles.scrollContent}>
 
         {/* Greeting Section */}
         <View style={styles.greetingContainer}>
-          <Image source={require('../../../../assets/images/dash_leaf_bg.jpg')} style={styles.bgLeaf} resizeMode="contain" />
+          <Image source={require('../../../../assets/images/dash_leaf_bg.jpg')} style={styles.bgLeaf} resizeMode="cover" />
           <Text style={styles.greetingText}>Good morning,</Text>
           <Text style={styles.nameText}>{profile?.profile?.firstName || 'Member'} ✨</Text>
           <Text style={styles.subtitleText}>Let's take care of you today.</Text>
@@ -167,7 +167,7 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLOR_BG,
+    backgroundColor: COLOR_PRIMARY,
     paddingTop: Platform.OS === 'android' ? 40 : 0,
   },
   scrollContent: {
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontFamily: 'serif',
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: COLOR_PRIMARY,
   },
