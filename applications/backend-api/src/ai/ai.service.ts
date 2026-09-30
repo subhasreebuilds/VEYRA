@@ -52,13 +52,13 @@ export class AiService {
 
         let res;
         for (let attempt = 1; attempt <= 3; attempt++) {
-          res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${geminiKey}`, {
+          res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(nativePayload),
-            signal: AbortSignal.timeout(10000)
+            signal: AbortSignal.timeout(20000)
           });
 
           if (res.ok) break;
@@ -95,7 +95,7 @@ export class AiService {
     if (openRouterKey) {
       try {
         this.logger.log('Attempting AI generation with OpenRouter Fallback...');
-        const orPayload = { ...payload, model: 'deepseek/deepseek-v4-flash-0731:free' };
+        const orPayload = { ...payload, model: 'google/gemini-2.5-pro' };
         
         const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
           method: 'POST',
