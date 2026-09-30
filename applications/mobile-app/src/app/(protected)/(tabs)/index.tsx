@@ -85,7 +85,7 @@ export default function DashboardScreen() {
         <View style={styles.greetingContainer}>
           <Image source={require('../../../../assets/images/dash_leaf_bg.jpg')} style={styles.bgLeaf} resizeMode="contain" />
           <Text style={styles.greetingText}>Good morning,</Text>
-          <Text style={styles.nameText}>{profile?.firstName || 'Beautiful'} 🌺</Text>
+          <Text style={styles.nameText}>{profile?.profile?.firstName || 'Member'} ✨</Text>
           <Text style={styles.subtitleText}>Let's take care of you today.</Text>
         </View>
 
@@ -159,8 +159,6 @@ export default function DashboardScreen() {
           ))}
         </View>
         
-        <View style={{height: 100}} />
-
       </ScrollView>
     </SafeAreaView>
   );
