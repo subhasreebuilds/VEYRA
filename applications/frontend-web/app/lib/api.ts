@@ -9,6 +9,14 @@ export async function fetchApi(endpoint: string, options: RequestInit & { ignore
     headers.set('Content-Type', 'application/json');
   }
 
+  // Attach Bearer token from localStorage to support cross-domain requests (Vercel) when third-party cookies are blocked
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('veyra_token');
+    if (token && !headers.has('Authorization')) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+  }
+
   const response = await fetch(url, {
     ...fetchOptions,
     headers,

@@ -23,11 +23,16 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      await fetchApi('/auth/login', {
+      const res = await fetchApi('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
-      if (typeof window !== 'undefined') localStorage.setItem('veyra_logged_in', 'true');
+      if (typeof window !== 'undefined') {
+        if (res && res.accessToken) {
+          localStorage.setItem('veyra_token', res.accessToken);
+        }
+        localStorage.setItem('veyra_logged_in', 'true');
+      }
       await refreshUser();
     } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       setError(err.message || 'Failed to login. Please check your credentials.');

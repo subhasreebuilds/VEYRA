@@ -54,11 +54,16 @@ export default function Register() {
 
       // Seamlessly log in newly registered user to jump straight into personalized onboarding
       try {
-        await fetchApi('/auth/login', {
+        const loginRes = await fetchApi('/auth/login', {
           method: 'POST',
           body: JSON.stringify({ email, password }),
         });
-        if (typeof window !== 'undefined') localStorage.setItem('veyra_logged_in', 'true');
+        if (typeof window !== 'undefined') {
+          if (loginRes && loginRes.accessToken) {
+            localStorage.setItem('veyra_token', loginRes.accessToken);
+          }
+          localStorage.setItem('veyra_logged_in', 'true');
+        }
         await refreshUser();
         router.push('/onboarding');
       } catch (loginErr) {
