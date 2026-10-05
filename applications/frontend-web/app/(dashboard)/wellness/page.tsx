@@ -14,6 +14,7 @@ interface RecipeModalData {
   img: string;
   ingredients: string[];
   instructions: string[];
+  benefits?: string;
 }
 
 const DEFAULT_NUTRITION_PLAN = {
@@ -114,7 +115,7 @@ export default function WellnessPage() {
       }
     } catch (err) {
       setTimeout(() => {
-        setNutritionPlan(prev => ({ ...prev }));
+        setNutritionPlan((prev: any) => ({ ...prev }));
       }, 800);
     } finally {
       setIsGeneratingPlan(false);
@@ -122,7 +123,7 @@ export default function WellnessPage() {
   };
 
   const toggleSave = (id: string) => {
-    setSavedRecipes(prev => ({ ...prev, [id]: !prev[id] }));
+    setSavedRecipes((prev: Record<string, boolean>) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const recipes = [
