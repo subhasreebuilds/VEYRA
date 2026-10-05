@@ -32,12 +32,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshUser = async () => {
     try {
       setLoading(true);
-      const userData = await fetchApi('/auth/me');
+      const userData = await fetchApi('/auth/me', { ignore401: true });
+      if (!userData) {
+        setUser(null);
+        setProfileComplete(false);
+        return;
+      }
       setUser(userData);
       
       // Also check profile completion status
       try {
-        const profile = await fetchApi('/profile');
+        const profile = await fetchApi('/profile', { ignore401: true });
         setProfileComplete(profile?.isComplete || false);
       } catch (err) {
         setProfileComplete(false);
