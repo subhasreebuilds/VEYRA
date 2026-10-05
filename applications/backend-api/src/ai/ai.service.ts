@@ -13,118 +13,149 @@ export class AiService {
    */
   private async executeWithFallback(payload: any): Promise<any> {
     const geminiKey = this.configService.get<string>('GEMINI_API_KEY');
-    const openRouterKey = this.configService.get<string>('FALLBACK_LLM_API_KEY') || this.configService.get<string>('OPENROUTER_API_KEY');
+    const fallbackKey = this.configService.get<string>('FALLBACK_LLM_API_KEY') || this.configService.get<string>('OPENROUTER_API_KEY');
+    const fallbackBaseUrl = this.configService.get<string>('FALLBACK_LLM_BASE_URL') || 'https://api.openai.com/v1';
+    const fallbackModel = this.configService.get<string>('FALLBACK_AI_MODEL') || 'gpt-4o-mini';
     
     let lastError: any = null;
 
-    // 1. Try Gemini
+    // 1. Try Gemini with multiple model fallbacks
     if (geminiKey) {
-      try {
-        this.logger.log('Attempting AI generation with Gemini Pro...');
-        const geminiContents = payload.messages.filter((m: any) => m.role !== 'system').map((m: any) => {
-          let parts = [];
-          if (Array.isArray(m.content)) {
-            parts = m.content.map((c: any) => {
-              if (c.type === 'text') return { text: c.text };
-              if (c.type === 'image_url') {
-                const url = c.image_url.url;
-                const mimeType = url.substring(url.indexOf(':') + 1, url.indexOf(';'));
-                const data = url.substring(url.indexOf(',') + 1);
-                return { inlineData: { mimeType, data } };
-              }
-            });
-          } else {
-            parts = [{ text: m.content }];
-          }
-          return { role: m.role, parts };
-        });
+      const geminiModels = [
+        'gemini-flash-latest',
+        'gemini-pro-latest',
+        'gemini-2.5-flash',
+        'gemini-2.5-pro',
+        'gemini-1.5-flash',
+        'gemini-3.5-pro',
+      ];
 
-        const systemMsg = payload.messages.find((m: any) => m.role === 'system');
-        const systemInstruction = systemMsg ? { parts: [{ text: systemMsg.content }] } : undefined;
-
-        const nativePayload: any = {
-          contents: geminiContents,
-          generationConfig: {
-            responseMimeType: "application/json"
-          }
-        };
-        if (systemInstruction) nativePayload.systemInstruction = systemInstruction;
-
-        let res;
-        for (let attempt = 1; attempt <= 3; attempt++) {
-          res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(nativePayload),
-            signal: AbortSignal.timeout(20000)
+      const geminiContents = payload.messages.filter((m: any) => m.role !== 'system').map((m: any) => {
+        let parts = [];
+        if (Array.isArray(m.content)) {
+          parts = m.content.map((c: any) => {
+            if (c.type === 'text') return { text: c.text };
+            if (c.type === 'image_url') {
+              const url = c.image_url.url;
+              const mimeType = url.substring(url.indexOf(':') + 1, url.indexOf(';'));
+              const data = url.substring(url.indexOf(',') + 1);
+              return { inlineData: { mimeType, data } };
+            }
           });
-
-          if (res.ok) break;
-          
-          const errorText = await res.text();
-          this.logger.warn(`Gemini attempt ${attempt} failed with status ${res.status}: ${errorText}`);
-          
-          if (res.status === 503 && attempt < 3) {
-            this.logger.log(`Waiting 2 seconds before retry ${attempt + 1}...`);
-            await new Promise(r => setTimeout(r, 2000));
-          } else {
-            break;
-          }
+        } else {
+          parts = [{ text: m.content }];
         }
+        return { role: m.role, parts };
+      });
 
-        if (res && res.ok) {
-          const data = await res.json();
-          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) {
-            this.logger.log('✅ SUCCESS: AI request fulfilled by GEMINI PRO');
-            const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-            return JSON.parse(cleanedText);
-          }
+      const systemMsg = payload.messages.find((m: any) => m.role === 'system');
+      const systemInstruction = systemMsg ? { parts: [{ text: systemMsg.content }] } : undefined;
+
+      const nativePayload: any = {
+        contents: geminiContents,
+        generationConfig: {
+          responseMimeType: "application/json"
         }
-      } catch (err: any) {
-        this.logger.warn(`Gemini exception: ${err.message}`);
-        lastError = err;
+      };
+      if (systemInstruction) nativePayload.systemInstruction = systemInstruction;
+
+      let keyInvalid = false;
+
+      for (const model of geminiModels) {
+        if (keyInvalid) break;
+
+        try {
+          this.logger.log(`Attempting AI generation with Gemini (${model})...`);
+          
+          let res;
+          for (let attempt = 1; attempt <= 2; attempt++) {
+            res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(nativePayload),
+              signal: AbortSignal.timeout(15000)
+            });
+
+            if (res.ok) break;
+
+            const errorText = await res.text();
+
+            if (res.status === 400 || res.status === 403) {
+              this.logger.warn(`Gemini API key error (${res.status}): ${errorText}. Skipping Gemini provider.`);
+              keyInvalid = true;
+              break;
+            }
+
+            this.logger.warn(`Gemini (${model}) attempt ${attempt} failed with status ${res.status}: ${errorText}`);
+
+            if (res.status === 503 && attempt < 2) {
+              this.logger.log(`Waiting 1 second before retry...`);
+              await new Promise(r => setTimeout(r, 1000));
+            } else {
+              break;
+            }
+          }
+
+          if (res && res.ok) {
+            const data = await res.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) {
+              this.logger.log(`✅ SUCCESS: AI request fulfilled by GEMINI (${model})`);
+              const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+              return JSON.parse(cleanedText);
+            }
+          }
+        } catch (err: any) {
+          this.logger.warn(`Gemini (${model}) exception: ${err.message}`);
+          lastError = err;
+        }
       }
     } else {
       this.logger.warn('No GEMINI_API_KEY provided, skipping Gemini.');
     }
 
-    // 2. Try OpenRouter (Fallback)
-    if (openRouterKey) {
+    // 2. Try Fallback LLM (OpenAI / OpenRouter)
+    if (fallbackKey) {
       try {
-        this.logger.log('Attempting AI generation with OpenRouter Fallback...');
-        const orPayload = { ...payload, model: 'google/gemini-2.5-pro' };
+        const baseUrl = fallbackBaseUrl.replace(/\/$/, '');
+        const endpoint = baseUrl.endsWith('/chat/completions') ? baseUrl : `${baseUrl}/chat/completions`;
         
-        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        this.logger.log(`Attempting AI generation with Fallback LLM (${fallbackModel})...`);
+        const llmPayload = { ...payload, model: fallbackModel };
+        
+        const res = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${openRouterKey}`,
-            'HTTP-Referer': 'http://localhost:3000',
-            'X-Title': 'Veyra'
+            'Authorization': `Bearer ${fallbackKey}`
           },
-          body: JSON.stringify(orPayload)
+          body: JSON.stringify(llmPayload)
         });
 
         if (res.ok) {
           const data = await res.json();
           const text = data.choices?.[0]?.message?.content;
           if (text) {
-            this.logger.log('✅ SUCCESS: AI request fulfilled by OPENROUTER');
+            this.logger.log(`✅ SUCCESS: AI request fulfilled by Fallback LLM (${fallbackModel})`);
             const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
             return JSON.parse(cleanedText);
           }
         } else {
-          this.logger.error(`OpenRouter failed with status ${res.status}: ${await res.text()}`);
+          const errText = await res.text();
+          if (res.status === 402) {
+            this.logger.warn(`Fallback LLM account has insufficient credits (402). Skipping.`);
+          } else {
+            this.logger.error(`Fallback LLM failed with status ${res.status}: ${errText}`);
+          }
         }
       } catch (err: any) {
-        this.logger.error(`OpenRouter exception: ${err.message}`);
+        this.logger.error(`Fallback LLM exception: ${err.message}`);
         lastError = err;
       }
     } else {
-      this.logger.error('No FALLBACK_LLM_API_KEY (OpenRouter) provided.');
+      this.logger.error('No FALLBACK_LLM_API_KEY provided.');
     }
 
     this.logger.warn('All AI providers failed or tokens expired. Returning DEMO FALLBACK DATA.');
@@ -143,7 +174,6 @@ export class AiService {
       const overallScore = Math.floor(Math.random() * (96 - 72 + 1)) + 72;
       
       const generateMetric = (name: string, isLowerBetter: boolean, goodNote: string, badNote: string) => {
-        // Generate a random score. If lower is better, tend towards lower numbers for a realistic "good" scan.
         const score = isLowerBetter 
           ? Math.floor(Math.random() * (45 - 10 + 1)) + 10 
           : Math.floor(Math.random() * (98 - 65 + 1)) + 65;
@@ -234,9 +264,30 @@ export class AiService {
     if (systemPrompt.includes('professional culinary nutritionist')) {
       return {
         recipes: [
-          { id: "r1", title: "Demo: High Protein Pancakes", category: "Breakfast", time: "15 min", calories: "400", macros: { protein: "30g", carbs: "40g", fat: "10g" }, tags: ["High Protein"], image: "/recipe-1.jpg", description: "Fluffy protein pancakes.", benefits: "Muscle repair.", ingredients: ["1 cup oats", "1 scoop protein powder", "2 eggs"], instructions: ["Blend ingredients", "Cook on skillet"] },
-          { id: "r2", title: "Demo: Chicken Salad", category: "Lunch", time: "10 min", calories: "450", macros: { protein: "35g", carbs: "15g", fat: "25g" }, tags: ["Low Carb"], image: "/recipe-2.jpg", description: "Quick salad.", benefits: "Sustained energy.", ingredients: ["Chicken breast", "Mixed greens", "Olive oil"], instructions: ["Chop chicken", "Toss with greens and oil"] }
+          { id: "r1", title: "Masala Berry Oats Porridge", category: "Breakfast", time: "15 min", calories: "350 kcal", macros: { protein: "22g", carbs: "45g", fat: "8g" }, tags: ["Indian", "Breakfast"], image: "https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=800&q=80", description: "Warm Indian-style rolled oats cooked with cardamom, milk, and fresh berries.", benefits: "Rich in soluble fiber and antioxidants to stabilize morning glucose levels.", ingredients: ["1/2 cup rolled oats", "1 cup almond milk", "1/4 tsp cardamom powder", "1/4 cup mixed berries", "1 tbsp chia seeds"], instructions: ["Cook oats in almond milk with cardamom for 5 minutes.", "Remove from heat and stir well.", "Top with fresh berries and chia seeds before serving warm."] },
+          { id: "r2", title: "Indian Kachumber Salad", category: "Lunch", time: "15 min", calories: "320 kcal", macros: { protein: "14g", carbs: "22g", fat: "18g" }, tags: ["Low Carb", "Lunch"], image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80", description: "Crisp cucumber, tomatoes, greens, and avocado tossed with lemon and chaat masala.", benefits: "Promotes digestive hydration and skin radiance.", ingredients: ["2 cups mixed greens", "1 diced cucumber", "1/2 cup cherry tomatoes", "1/2 avocado", "1 tbsp lemon juice & chaat masala"], instructions: ["Chop cucumber, tomatoes, and greens.", "Toss with diced avocado in a bowl.", "Drizzle with lemon juice and chaat masala."] },
+          { id: "r3", title: "Chicken Quinoa Khichdi", category: "Lunch", time: "25 min", calories: "420 kcal", macros: { protein: "38g", carbs: "42g", fat: "10g" }, tags: ["High Protein", "Indian"], image: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=800&q=80", description: "Lean chicken breast cooked with organic quinoa, moong dal, ginger, and turmeric.", benefits: "Complete amino acid profile supporting lean muscle mass and digestive comfort.", ingredients: ["150g boneless chicken breast", "1/2 cup quinoa", "1/4 cup moong dal", "1/2 tsp turmeric & ginger-garlic paste", "1 tsp cow ghee"], instructions: ["Sauté ginger-garlic and turmeric in ghee.", "Add diced chicken, quinoa, moong dal, and 2 cups water.", "Simmer for 20 minutes until creamy."] },
+          { id: "r4", title: "Paneer & Broccoli Kadhai Stir-Fry", category: "Dinner", time: "20 min", calories: "450 kcal", macros: { protein: "32g", carbs: "18g", fat: "22g" }, tags: ["Vegetarian", "Dinner"], image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80", description: "Fresh cottage cheese cubes sautéed with broccoli, bell peppers, and mild Indian spices.", benefits: "Abundant in calcium, zinc, and dietary fiber.", ingredients: ["140g fresh paneer cubes", "1.5 cups broccoli florets", "1/2 bell pepper", "1/2 tsp cumin & garam masala", "1 tsp mustard oil"], instructions: ["Sauté cumin, broccoli, and bell pepper in mustard oil for 4 minutes.", "Add paneer cubes and mild kadhai spices.", "Toss for 4 minutes until golden brown and serve hot."] },
+          { id: "r5", title: "Roasted Tomato Moong Dal Soup", category: "Snacks", time: "15 min", calories: "240 kcal", macros: { protein: "12g", carbs: "28g", fat: "6g" }, tags: ["Low Calorie", "Indian"], image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80", description: "Comforting roasted tomato and yellow lentil soup seasoned with roasted cumin.", benefits: "High in lycopene and hydration to boost immune wellness.", ingredients: ["4 ripe tomatoes", "1/4 cup yellow moong dal", "2 garlic cloves", "1/2 tsp roasted cumin powder", "1 tsp ghee"], instructions: ["Roast tomatoes and boil moong dal until soft.", "Blend together into a velvety soup.", "Temper with ghee and cumin powder before serving."] },
+          { id: "r6", title: "Tawa Pan-Seared Fish Tikka", category: "Dinner", time: "20 min", calories: "440 kcal", macros: { protein: "40g", carbs: "10g", fat: "24g" }, tags: ["High Protein", "Indian"], image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80", description: "Fresh fish fillet marinated in curd, lemon, and mild tawa spices, pan-seared to perfection.", benefits: "Packed with essential Omega-3 fatty acids for heart and skin health.", ingredients: ["160g fish fillet", "2 tbsp hung curd", "1 tsp kasuri methi & tikka masala", "1 tbsp olive oil", "Lemon wedges"], instructions: ["Marinate fish in hung curd, lemon, and tikka masala for 10 minutes.", "Heat oil on a tawa or pan and sear fish for 4 minutes per side.", "Garnish with lemon and serve hot."] },
+          { id: "r7", title: "Mango Berry Protein Lassi", category: "Snacks", time: "10 min", calories: "260 kcal", macros: { protein: "24g", carbs: "30g", fat: "5g" }, tags: ["Indian", "Post Workout"], image: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&q=80", description: "Traditional Indian yogurt lassi blended with protein powder and fresh berries.", benefits: "Probiotic gut support and rapid post-workout recovery.", ingredients: ["1 cup fresh curd", "1 scoop vanilla protein powder", "1/2 cup mixed berries", "Pinch of cardamom powder"], instructions: ["Add curd, protein powder, berries, and cardamom to blender.", "Blend until creamy and smooth.", "Pour into a chilled glass and serve."] }
         ]
+      };
+    }
+
+    // 5. Skin Recommendations Mock
+    if (systemPrompt.includes('generate STRICT structured JSON recommendations')) {
+      return {
+        recommendations: [
+          { category: "CLEANSER", brand: "CeraVe", name: "Hydrating Facial Cleanser", price: "$15.00", reason: "Soothes skin barrier." },
+          { category: "SERUM", brand: "The Ordinary", name: "Niacinamide 10% + Zinc 1%", price: "$7.00", reason: "Balances sebum equilibrium." },
+          { category: "MOISTURIZER", brand: "La Roche-Posay", name: "Toleriane Double Repair", price: "$22.00", reason: "Deep hydration." }
+        ],
+        homeRemedies: [
+          { name: "Honey & Oatmeal Mask", reason: "Calms superficial redness and hydrates." }
+        ],
+        diet: ["Drink 3L of water daily", "Increase omega-3 fatty acids intake"],
+        lifestyle: ["Ensure 8 hours of sleep", "Change pillowcases twice weekly"]
       };
     }
 
@@ -288,9 +339,12 @@ Generate the personalized meal plan as a JSON object matching the required struc
 
   async generateSmartRecipes(context: any): Promise<any> {
     const systemPrompt = `You are an elite, professional culinary nutritionist for the Veyra app.
-Your task is to generate 7 personalized, delicious recipes that STRICTLY adhere to the user's calculated macro-nutrient targets and constraints (allergies, dislikes).
+Your task is to generate 7 personalized, delicious Indian recipes that STRICTLY adhere to the user's calculated macro-nutrient targets and constraints (allergies, dislikes).
 
-IMPORTANT INSTRUCTIONS:
+CRITICAL CUISINE REQUIREMENTS:
+- You MUST ONLY generate simple, healthy, everyday INDIAN recipes (e.g. Masala Oats, Paneer Bhurji / Stir-Fry, Dal Khichdi, Tomato Moong Dal Soup, Veg Biryani, Chana Masala, Tawa Fish/Paneer, Mango Lassi/Smoothie).
+- STRICTLY DO NOT USE beef, pork, veal, or non-Indian Western fast food.
+- Focus on accessible, wholesome Indian home-cooked dishes using everyday Indian kitchen ingredients (Paneer, Oats, Dal, Chicken, Fish, Curd, Vegetables, Spices).
 - Generate exactly 7 recipes.
 - Allergies are HARD CONSTRAINTS.
 - Return ONLY valid JSON. Do not include markdown code blocks.
@@ -299,18 +353,18 @@ REQUIRED JSON STRUCTURE:
 {
   "recipes": [
     {
-      "id": "will_be_generated_by_db",
+      "id": "recipe_1",
       "title": "Recipe Name",
       "category": "High Protein",
       "time": "25 min",
-      "calories": "[DYNAMIC]",
-      "macros": { "protein": "[DYNAMIC]g", "carbs": "[DYNAMIC]g", "fat": "[DYNAMIC]g" },
+      "calories": "400 kcal",
+      "macros": { "protein": "30g", "carbs": "40g", "fat": "12g" },
       "tags": ["Gluten-Free"],
-      "image": "/placeholder.png",
+      "image": "https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=800&auto=format&fit=crop",
       "description": "Description",
       "benefits": "Benefit",
-      "ingredients": ["Ingredient 1"],
-      "instructions": ["Step 1"]
+      "ingredients": ["Ingredient 1", "Ingredient 2"],
+      "instructions": ["Step 1", "Step 2"]
     }
   ]
 }`;

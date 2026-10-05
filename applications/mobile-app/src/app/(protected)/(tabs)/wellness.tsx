@@ -145,8 +145,243 @@ export default function WellnessScreen() {
   const [nutritionPlan, setNutritionPlan] = useState<any>(DEFAULT_NUTRITION_PLAN);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
 
+  // Dynamic AI Recipes State & Logic (matching Web App API)
+  const [apiRecipes, setApiRecipes] = useState<any[]>([]);
+  const [isGeneratingRecipes, setIsGeneratingRecipes] = useState(false);
+  const [isLoadingRecipes, setIsLoadingRecipes] = useState(false);
+  const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
+
+  const resolveImageUri = (img: string | undefined, title: string = '', category: string = '', index: number = 0) => {
+    const map: Record<string, string> = {
+      '/recipe-1.jpg': 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=800&q=80',
+      '/recipe-2.jpg': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
+      '/recipe-3.jpg': 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=800&q=80',
+      '/recipe-4.jpg': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80',
+      '/recipe-5.jpg': 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80',
+      '/recipe-6.jpg': 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800&q=80',
+      '/recipe-7.jpg': 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=800&q=80',
+    };
+
+    if (img && typeof img === 'string' && img.trim().length > 0) {
+      if (img.startsWith('http')) {
+        if (img.includes('unsplash.com')) {
+          const photoMatch = img.match(/photo-[\w-]+/);
+          if (photoMatch) {
+            return `https://images.unsplash.com/${photoMatch[0]}?w=800&q=80`;
+          }
+        }
+        return img;
+      }
+      if (map[img]) return map[img];
+    }
+
+    const t = (title + ' ' + category).toLowerCase();
+    if (t.includes('oat') || t.includes('porridge') || t.includes('pancake') || t.includes('berry')) return map['/recipe-1.jpg'];
+    if (t.includes('salad') || t.includes('green') || t.includes('avocado')) return map['/recipe-2.jpg'];
+    if (t.includes('chicken') || t.includes('poultry') || t.includes('meat') || t.includes('quinoa')) return map['/recipe-3.jpg'];
+    if (t.includes('paneer') || t.includes('curry') || t.includes('tofu') || t.includes('stir')) return map['/recipe-4.jpg'];
+    if (t.includes('soup') || t.includes('stew') || t.includes('broth') || t.includes('tomato')) return map['/recipe-5.jpg'];
+    if (t.includes('fish') || t.includes('salmon') || t.includes('seafood')) return map['/recipe-6.jpg'];
+    if (t.includes('smoothie') || t.includes('shake') || t.includes('drink')) return map['/recipe-7.jpg'];
+
+    const defaults = Object.values(map);
+    return defaults[index % defaults.length];
+  };
+
+  const staticRecipes = [
+    {
+      id: 'oats',
+      title: 'Masala Berry Oats Porridge',
+      time: '15 mins',
+      cal: '350 kcal',
+      img: '/recipe-1.jpg',
+      cat: 'Breakfast',
+      tags: ['Breakfast', 'Indian', 'High Protein'],
+      prep: '15 mins',
+      cook: '0 mins',
+      servings: '1 serving',
+      macros: { protein: '22g', carbs: '45g', fat: '8g' },
+      benefits: 'Rich in soluble fiber and antioxidants to stabilize morning glucose levels.',
+      ingredients: [
+        '1/2 cup rolled oats',
+        '1 cup almond milk',
+        '1/4 tsp cardamom powder',
+        '1/4 cup mixed berries',
+        '1 tbsp chia seeds',
+      ],
+      instructions: [
+        '1. Cook oats in almond milk with cardamom for 5 minutes.',
+        '2. Remove from heat and stir well.',
+        '3. Top with fresh berries and chia seeds before serving warm.',
+      ],
+      screen: 'RECIPE_DETAIL',
+    },
+    {
+      id: 'salad',
+      title: 'Indian Kachumber Salad',
+      time: '15 mins',
+      cal: '320 kcal',
+      img: '/recipe-2.jpg',
+      cat: 'Lunch',
+      tags: ['Lunch', 'Low Carb', 'Indian'],
+      prep: '15 mins',
+      cook: '0 mins',
+      servings: '1 serving',
+      macros: { protein: '14g', carbs: '22g', fat: '18g' },
+      benefits: 'Promotes digestive hydration and skin radiance.',
+      ingredients: [
+        '2 cups mixed greens',
+        '1 diced cucumber',
+        '1/2 cup cherry tomatoes',
+        '1/2 avocado',
+        '1 tbsp lemon juice & chaat masala',
+      ],
+      instructions: [
+        '1. Chop cucumber, tomatoes, and greens.',
+        '2. Toss with diced avocado in a serving bowl.',
+        '3. Drizzle with lemon juice and chaat masala.',
+      ],
+      screen: 'RECIPE_DETAIL',
+    },
+    {
+      id: 'quinoa_chicken',
+      title: 'Chicken Quinoa Khichdi',
+      time: '25 mins',
+      cal: '420 kcal',
+      img: '/recipe-3.jpg',
+      cat: 'Lunch',
+      tags: ['Lunch', 'High Protein', 'Indian'],
+      prep: '20 mins',
+      cook: '10 mins',
+      servings: '1 serving',
+      macros: { protein: '38g', carbs: '42g', fat: '10g' },
+      benefits: 'Complete amino acid profile supporting lean muscle mass and digestive comfort.',
+      ingredients: [
+        '150g boneless chicken breast',
+        '1/2 cup quinoa',
+        '1/4 cup moong dal',
+        '1/2 tsp turmeric & ginger-garlic paste',
+        '1 tsp cow ghee',
+      ],
+      instructions: [
+        '1. Sauté ginger-garlic and turmeric in ghee.',
+        '2. Add diced chicken, quinoa, moong dal, and 2 cups water.',
+        '3. Simmer for 20 minutes until creamy.',
+      ],
+      screen: 'RECIPE_DETAIL',
+    },
+    {
+      id: 'paneer',
+      title: 'Paneer & Broccoli Kadhai Stir-Fry',
+      time: '20 mins',
+      cal: '450 kcal',
+      img: '/recipe-4.jpg',
+      cat: 'Dinner',
+      tags: ['Dinner', 'High Protein', 'Vegetarian'],
+      prep: '15 mins',
+      cook: '10 mins',
+      servings: '2 servings',
+      macros: { protein: '32g', carbs: '18g', fat: '22g' },
+      benefits: 'Abundant in calcium, zinc, and dietary fiber.',
+      ingredients: [
+        '140g fresh paneer cubes',
+        '1.5 cups broccoli florets',
+        '1/2 bell pepper',
+        '1/2 tsp cumin & garam masala',
+        '1 tsp mustard oil',
+      ],
+      instructions: [
+        '1. Sauté cumin, broccoli, and bell pepper in mustard oil for 4 minutes.',
+        '2. Add paneer cubes and mild kadhai spices.',
+        '3. Toss for 4 minutes until golden brown and serve hot.',
+      ],
+      screen: 'RECIPE_DETAIL',
+    },
+    {
+      id: 'soup',
+      title: 'Roasted Tomato Moong Dal Soup',
+      time: '15 mins',
+      cal: '240 kcal',
+      img: '/recipe-5.jpg',
+      cat: 'Snacks',
+      tags: ['Snacks', 'Low Calorie', 'Indian'],
+      prep: '10 mins',
+      cook: '15 mins',
+      servings: '2 servings',
+      macros: { protein: '12g', carbs: '28g', fat: '6g' },
+      benefits: 'High in lycopene and hydration to boost immune wellness.',
+      ingredients: [
+        '4 ripe tomatoes',
+        '1/4 cup yellow moong dal',
+        '2 garlic cloves',
+        '1/2 tsp roasted cumin powder',
+        '1 tsp ghee',
+      ],
+      instructions: [
+        '1. Roast tomatoes and boil moong dal until soft.',
+        '2. Blend together into a velvety soup.',
+        '3. Temper with ghee and cumin powder before serving.',
+      ],
+      screen: 'RECIPE_DETAIL',
+    },
+    {
+      id: 'salmon',
+      title: 'Tawa Pan-Seared Fish Tikka',
+      time: '20 mins',
+      cal: '440 kcal',
+      img: '/recipe-6.jpg',
+      cat: 'Dinner',
+      tags: ['Dinner', 'High Protein', 'Indian'],
+      prep: '10 mins',
+      cook: '10 mins',
+      servings: '1 serving',
+      macros: { protein: '40g', carbs: '10g', fat: '24g' },
+      benefits: 'Packed with essential Omega-3 fatty acids for heart and skin health.',
+      ingredients: [
+        '160g fish fillet',
+        '2 tbsp hung curd',
+        '1 tsp kasuri methi & tikka masala',
+        '1 tbsp olive oil',
+        'Lemon wedges',
+      ],
+      instructions: [
+        '1. Marinate fish in hung curd, lemon, and tikka masala for 10 minutes.',
+        '2. Heat oil on a tawa or pan and sear fish for 4 minutes per side.',
+        '3. Garnish with lemon and serve hot.',
+      ],
+      screen: 'RECIPE_DETAIL',
+    },
+    {
+      id: 'smoothie',
+      title: 'Mango Berry Protein Lassi',
+      time: '10 mins',
+      cal: '260 kcal',
+      img: '/recipe-7.jpg',
+      cat: 'Snacks',
+      tags: ['Snacks', 'Indian', 'Post Workout'],
+      prep: '5 mins',
+      cook: '0 mins',
+      servings: '1 serving',
+      macros: { protein: '24g', carbs: '30g', fat: '5g' },
+      benefits: 'Probiotic gut support and rapid post-workout recovery.',
+      ingredients: [
+        '1 cup fresh curd',
+        '1 scoop vanilla protein powder',
+        '1/2 cup mixed berries',
+        'Pinch of cardamom powder',
+      ],
+      instructions: [
+        '1. Add curd, protein powder, berries, and cardamom to blender.',
+        '2. Blend until creamy and smooth.',
+        '3. Pour into a chilled glass and serve.',
+      ],
+      screen: 'RECIPE_DETAIL',
+    },
+  ];
+
   useEffect(() => {
     loadNutritionPlan();
+    loadRecipes();
   }, []);
 
   const loadNutritionPlan = async () => {
@@ -173,6 +408,36 @@ export default function WellnessScreen() {
       }, 800);
     } finally {
       setIsGeneratingPlan(false);
+    }
+  };
+
+  const loadRecipes = async () => {
+    try {
+      setIsLoadingRecipes(true);
+      const data = await fetchApi('/recipes');
+      if (data && Array.isArray(data) && data.length > 0) {
+        setApiRecipes(data.map((item: any) => item.recipeData || item));
+      }
+    } catch (err) {
+      // Fallback to static recipes
+    } finally {
+      setIsLoadingRecipes(false);
+    }
+  };
+
+  const generateRecipes = async () => {
+    try {
+      setIsGeneratingRecipes(true);
+      const data = await fetchApi('/recipes/generate', { method: 'POST' });
+      if (data && Array.isArray(data)) {
+        await loadRecipes();
+      }
+    } catch (err) {
+      setTimeout(() => {
+        setApiRecipes(prev => [...prev]);
+      }, 800);
+    } finally {
+      setIsGeneratingRecipes(false);
     }
   };
 
@@ -505,48 +770,91 @@ export default function WellnessScreen() {
   // ==========================================
   if (currentScreen === 'RECIPES') {
     const categories = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Snacks'];
-    const recipesData = [
-      {
-        id: 'oats',
-        title: 'Overnight Oats',
-        time: '15 mins',
-        cal: '320 kcal',
-        img: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=400&auto=format&fit=crop',
-        cat: 'Breakfast',
-        screen: 'RECIPE_DETAIL_OATS',
-      },
-      {
-        id: 'paneer',
-        title: 'Paneer Stir Fry',
-        time: '25 mins',
-        cal: '420 kcal',
-        img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=400&auto=format&fit=crop',
-        cat: 'Lunch',
-        screen: 'RECIPE_DETAIL_PANEER',
-      },
-      {
-        id: 'quinoa',
-        title: 'Veg Quinoa Bowl',
-        time: '20 mins',
-        cal: '380 kcal',
-        img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=400&auto=format&fit=crop',
-        cat: 'Dinner',
-        screen: 'RECIPE_DETAIL_PANEER',
-      },
-      {
-        id: 'soup',
-        title: 'Tomato Soup',
-        time: '15 mins',
-        cal: '250 kcal',
-        img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=400&auto=format&fit=crop',
-        cat: 'Snacks',
-        screen: 'RECIPE_DETAIL_OATS',
-      },
-    ];
 
-    const filtered = recipesData.filter(r => {
-      const matchCat = recipeCategory === 'All' || r.cat === recipeCategory;
-      const matchQuery = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const recipesList = apiRecipes.length > 0
+      ? apiRecipes.map((r: any, idx: number) => {
+          const rec = r.recipeData || r;
+          const rawId = r.id || rec.id;
+          const validId = rawId && rawId !== 'will_be_generated_by_db' ? rawId : `api_recipe_${idx}`;
+          const title = rec.title || 'Curated Meal';
+          let cat = rec.category || 'Lunch';
+
+          // Normalize generic categories like "High Protein" to meal types based on dish title
+          const titleLower = title.toLowerCase();
+          if (cat === 'High Protein' || cat === 'Low Carb' || cat === 'Healthy' || !['Breakfast', 'Lunch', 'Dinner', 'Snacks'].includes(cat)) {
+            if (titleLower.includes('oat') || titleLower.includes('pancake') || titleLower.includes('berry') || titleLower.includes('egg')) {
+              cat = 'Breakfast';
+            } else if (titleLower.includes('chicken') || titleLower.includes('salad') || titleLower.includes('wrap') || titleLower.includes('quinoa')) {
+              cat = 'Lunch';
+            } else if (titleLower.includes('paneer') || titleLower.includes('soup') || titleLower.includes('curry') || titleLower.includes('salmon')) {
+              cat = 'Dinner';
+            } else {
+              cat = idx % 2 === 0 ? 'Lunch' : 'Dinner';
+            }
+          }
+
+          const img = resolveImageUri(rec.image, title, cat, idx);
+          
+          return {
+            id: validId,
+            title: title,
+            time: rec.time || '20 mins',
+            cal: rec.calories ? (typeof rec.calories === 'string' ? rec.calories : `${rec.calories} kcal`) : '350 kcal',
+            img: img,
+            cat: cat,
+            tags: Array.isArray(rec.tags) && rec.tags.length > 0 ? rec.tags : [cat, 'High Protein'],
+            prep: rec.prep || '10 mins',
+            cook: rec.cook || '15 mins',
+            servings: rec.servings || '1 serving',
+            benefits: rec.benefits || rec.description,
+            ingredients: rec.ingredients || [],
+            instructions: rec.instructions || [],
+            macros: rec.macros,
+            screen: 'RECIPE_DETAIL',
+          };
+        })
+      : staticRecipes;
+
+    const filtered = recipesList.filter((r: any) => {
+      // 1. Category Matching
+      let matchCat = true;
+      if (recipeCategory !== 'All') {
+        const targetCat = recipeCategory.toLowerCase();
+        const itemCat = (r.cat || '').toLowerCase();
+        const itemTags = Array.isArray(r.tags) ? r.tags.map((t: string) => t.toLowerCase()) : [];
+
+        matchCat =
+          itemCat.includes(targetCat) ||
+          targetCat.includes(itemCat) ||
+          itemTags.some((t: string) => t.includes(targetCat) || targetCat.includes(t));
+
+        // Keyword fallbacks for Breakfast/Lunch/Dinner/Snacks
+        if (!matchCat) {
+          const titleLower = r.title.toLowerCase();
+          if (targetCat === 'breakfast') {
+            matchCat = titleLower.includes('oat') || titleLower.includes('pancake') || titleLower.includes('berry') || titleLower.includes('egg');
+          } else if (targetCat === 'lunch') {
+            matchCat = titleLower.includes('salad') || titleLower.includes('bowl') || titleLower.includes('chicken') || titleLower.includes('wrap');
+          } else if (targetCat === 'dinner') {
+            matchCat = titleLower.includes('paneer') || titleLower.includes('soup') || titleLower.includes('quinoa') || titleLower.includes('curry') || titleLower.includes('salmon');
+          } else if (targetCat === 'snacks') {
+            matchCat = titleLower.includes('tea') || titleLower.includes('fruit') || titleLower.includes('snack') || titleLower.includes('nut');
+          }
+        }
+      }
+
+      // 2. Search Query Matching across title, category, and tags
+      let matchQuery = true;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const titleMatch = r.title.toLowerCase().includes(q);
+        const catMatch = (r.cat || '').toLowerCase().includes(q);
+        const tagMatch = Array.isArray(r.tags) && r.tags.some((t: string) => t.toLowerCase().includes(q));
+        const ingMatch = Array.isArray(r.ingredients) && r.ingredients.some((i: string) => i.toLowerCase().includes(q));
+        
+        matchQuery = titleMatch || catMatch || tagMatch || ingMatch;
+      }
+
       return matchCat && matchQuery;
     });
 
@@ -574,6 +882,7 @@ export default function WellnessScreen() {
             </View>
           </ScrollView>
 
+          {/* Search Row with Filter Button (Exact UI Match) */}
           <View style={styles.searchRow}>
             <View style={styles.searchInputWrap}>
               <Ionicons name="search-outline" size={18} color={COLORS.textMuted} style={{ marginRight: 8 }} />
@@ -585,23 +894,46 @@ export default function WellnessScreen() {
                 onChangeText={setSearchQuery}
               />
             </View>
-            <TouchableOpacity style={styles.filterIconBtn}>
+            <TouchableOpacity style={styles.filterIconBtn} activeOpacity={0.7}>
               <Ionicons name="options-outline" size={20} color={COLORS.textDark} />
             </TouchableOpacity>
           </View>
 
+          {/* Generate AI Recipes Button (Web AI Integration) */}
+          <TouchableOpacity
+            style={styles.generateAiRecipesBtn}
+            onPress={generateRecipes}
+            disabled={isGeneratingRecipes}
+            activeOpacity={0.8}
+          >
+            {isGeneratingRecipes ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <ActivityIndicator size="small" color="#FFFFFF" />
+                <Text style={styles.generateAiRecipesBtnText}>✨ AI IS COOKING...</Text>
+              </View>
+            ) : (
+              <Text style={styles.generateAiRecipesBtnText}>✨ GENERATE AI RECIPES ↻</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* 2x2 Recipe Cards Grid (Exact UI Match) */}
           <View style={styles.recipeGrid}>
-            {filtered.map(item => (
+            {filtered.map((item, idx) => (
               <TouchableOpacity
-                key={item.id}
+                key={item.id && item.id !== 'will_be_generated_by_db' ? `${item.id}_${idx}` : `recipe_card_${idx}`}
                 style={styles.recipeGridCard}
-                onPress={() => setCurrentScreen(item.screen as ScreenType)}
+                onPress={() => {
+                  setSelectedRecipe(item);
+                  setCurrentScreen('RECIPE_DETAIL' as ScreenType);
+                }}
+                activeOpacity={0.85}
               >
                 <View style={{ position: 'relative' }}>
                   <Image source={{ uri: item.img }} style={styles.recipeGridImg} />
                   <TouchableOpacity
                     style={styles.heartBtn}
                     onPress={() => toggleSaveRecipe(item.id)}
+                    activeOpacity={0.7}
                   >
                     <Ionicons
                       name={savedRecipes[item.id] ? 'heart' : 'heart-outline'}
@@ -610,10 +942,10 @@ export default function WellnessScreen() {
                     />
                   </TouchableOpacity>
                 </View>
-                <View style={{ padding: 10 }}>
-                  <Text style={styles.recipeGridTitle}>{item.title}</Text>
+                <View style={{ padding: 12 }}>
+                  <Text style={styles.recipeGridTitle} numberOfLines={1}>{item.title}</Text>
                   <Text style={styles.recipeGridMeta}>
-                    ⏱️ {item.time}  •  🔥 {item.cal}
+                    {item.time}  •  {item.cal}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -1006,98 +1338,187 @@ export default function WellnessScreen() {
   }
 
   // ==========================================
-  // SCREEN 8: RECIPE DETAIL (PANEER & VEG BOWL)
+  // SCREEN 8: DYNAMIC RECIPE DETAIL SCREEN
   // ==========================================
-  if (currentScreen === 'RECIPE_DETAIL_PANEER') {
-    const isSaved = savedRecipes['paneer'];
+  if (currentScreen === 'RECIPE_DETAIL' || currentScreen === 'RECIPE_DETAIL_OATS' || currentScreen === 'RECIPE_DETAIL_PANEER') {
+    const defaultItem = currentScreen === 'RECIPE_DETAIL_OATS'
+      ? {
+          id: 'oats',
+          title: 'High-Protein Berry Oats',
+          time: '15 mins',
+          cal: '350 kcal',
+          img: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=800&auto=format&fit=crop',
+          cat: 'Breakfast',
+          tags: ['Breakfast', 'High Protein', 'Gluten-Free'],
+          prep: '10 mins',
+          cook: '5 mins',
+          servings: '1 serving',
+          benefits: 'Rich in antioxidants and complex carbohydrates to support morning focus and skin radiance.',
+          ingredients: [
+            '1/2 cup rolled oats',
+            '1 scoop vanilla whey/plant protein powder',
+            '1 cup unsweetened almond milk',
+            '1/2 cup fresh mixed berries',
+            '1 tbsp chia seeds & sliced almonds'
+          ],
+          instructions: [
+            '1. Combine oats, almond milk, and chia seeds in a small saucepan over medium heat for 5 minutes.',
+            '2. Remove from heat and stir in the protein powder until smooth.',
+            '3. Top with fresh berries and almonds before serving warm.'
+          ]
+        }
+      : {
+          id: 'paneer',
+          title: 'Paneer & Mixed Veg Bowl',
+          time: '25 mins',
+          cal: '550 kcal',
+          img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop',
+          cat: 'Lunch',
+          tags: ['Lunch', 'High Protein', 'Vegetarian'],
+          prep: '15 mins',
+          cook: '10 mins',
+          servings: '2 servings',
+          benefits: 'High protein content supports muscle recovery while fiber-rich vegetables optimize gut digestion.',
+          ingredients: [
+            '100 g fresh paneer cubes',
+            '1/2 cup mixed vegetables (beans, carrot, capsicum)',
+            '1 tsp extra virgin olive oil',
+            '1/2 onion & 1 diced tomato',
+            'Himalayan sea salt, black pepper, & herbs'
+          ],
+          instructions: [
+            '1. Heat olive oil in a pan and sauté diced onions and mixed vegetables for 3-5 minutes.',
+            '2. Add fresh paneer cubes and season generously with sea salt, pepper, and herbs.',
+            '3. Toss gently over medium heat for 5-7 minutes until lightly golden and serve warm.'
+          ]
+        };
+
+    const item = selectedRecipe || defaultItem;
+    const isSaved = savedRecipes[item.id] || false;
+    const heroImg = resolveImageUri(item.img || item.image, item.title, item.cat);
+    const recipeTags = item.tags || [item.cat || 'Nutritious', 'AI Prescribed'];
+    const ingredientsList = Array.isArray(item.ingredients) && item.ingredients.length > 0 ? item.ingredients : [
+      '1 cup whole food grains or oats',
+      '150g lean protein source (tofu, paneer, or chicken)',
+      '1 cup fresh greens or vegetables',
+      '1 tbsp cold-pressed olive oil or seeds',
+      'Pinch of sea salt & fresh herbs'
+    ];
+    const instructionsList = Array.isArray(item.instructions) && item.instructions.length > 0 ? item.instructions : [
+      '1. Prepare all fresh produce and measure ingredients according to calculated targets.',
+      '2. Sauté or cook protein source over medium heat with healthy oil until lightly golden.',
+      '3. Assemble in a serving bowl with seasoned vegetables and enjoy fresh.'
+    ];
+
     return (
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 90 }} showsVerticalScrollIndicator={false}>
-          <TouchableOpacity style={styles.breadcrumbLink} onPress={() => setCurrentScreen('RECIPES')}>
-            <Ionicons name="chevron-back" size={14} color={COLORS.textMuted} style={{ marginRight: 4 }} />
-            <Text style={styles.breadcrumbText}>Recipes</Text>
-          </TouchableOpacity>
+      <View style={[styles.container, { backgroundColor: '#FBF9F5' }]}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
+          {/* Edge-to-Edge Hero Image with Circular Header Action Buttons */}
           <View style={styles.detailHeroContainer}>
             <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop' }}
+              source={{ uri: heroImg }}
               style={styles.detailHeroImg}
             />
-            <TouchableOpacity style={styles.detailBackBtn} onPress={() => setCurrentScreen('RECIPES')}>
-              <Ionicons name="chevron-back" size={20} color={COLORS.textDark} />
+            <TouchableOpacity style={styles.detailBackBtn} onPress={() => setCurrentScreen('RECIPES')} activeOpacity={0.8}>
+              <Ionicons name="chevron-back" size={20} color="#2D3F33" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.detailBookmarkBtn} onPress={() => toggleSaveRecipe('paneer')}>
+            <TouchableOpacity style={styles.detailBookmarkBtn} onPress={() => toggleSaveRecipe(item.id)} activeOpacity={0.8}>
               <Ionicons
-                name={isSaved ? 'bookmark' : 'bookmark-outline'}
+                name={isSaved ? 'heart' : 'heart-outline'}
                 size={20}
-                color={COLORS.primary}
+                color={isSaved ? '#D9534F' : '#2D3F33'}
               />
             </TouchableOpacity>
           </View>
 
+          {/* Main Recipe Card Detail Content */}
           <View style={styles.detailBodyContainer}>
-            <Text style={styles.detailTitle}>Paneer & Mixed Veg Bowl</Text>
+            <Text style={styles.detailTitle}>{item.title}</Text>
 
             <View style={styles.tagsRow}>
-              {['Lunch', 'High Protein', 'Vegetarian'].map((t, idx) => (
+              {recipeTags.map((t: string, idx: number) => (
                 <View key={idx} style={styles.tagBadge}>
                   <Text style={styles.tagText}>{t}</Text>
                 </View>
               ))}
             </View>
 
+            {/* 3-Column Stats Row with Dividers */}
             <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Ionicons name="time-outline" size={16} color={COLORS.primary} />
-                <Text style={styles.statVal}>25 mins</Text>
-                <Text style={styles.statLbl}>Prep time</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Ionicons name="flame-outline" size={16} color={COLORS.primary} />
-                <Text style={styles.statVal}>15 mins</Text>
-                <Text style={styles.statLbl}>Cook time</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Ionicons name="people-outline" size={16} color={COLORS.primary} />
-                <Text style={styles.statVal}>2 servings</Text>
-                <Text style={styles.statLbl}>Serves</Text>
-              </View>
-            </View>
-
-            <Text style={styles.detailSectionTitle}>Ingredients</Text>
-            <View style={styles.listContainer}>
-              {[
-                '100 g paneer',
-                '1/2 cup mixed vegetables (beans, carrot, capsicum)',
-                '1 tsp olive oil',
-                '1/2 onion, 1 tomato',
-                'Salt, pepper, herbs',
-              ].map((ing, idx) => (
-                <View key={idx} style={styles.listItemRow}>
-                  <Text style={styles.bulletDot}>•</Text>
-                  <Text style={styles.listText}>{ing}</Text>
+              <View style={styles.statItemCol}>
+                <Ionicons name="time-outline" size={20} color="#2D3F33" />
+                <View style={{ marginLeft: 8 }}>
+                  <Text style={styles.statVal}>{item.prep || item.time || '15 mins'}</Text>
+                  <Text style={styles.statLbl}>Prep time</Text>
                 </View>
-              ))}
+              </View>
+
+              <View style={styles.statDividerVertical} />
+
+              <View style={styles.statItemCol}>
+                <Ionicons name="stopwatch-outline" size={20} color="#2D3F33" />
+                <View style={{ marginLeft: 8 }}>
+                  <Text style={styles.statVal}>{item.cook || '0 mins'}</Text>
+                  <Text style={styles.statLbl}>Cook time</Text>
+                </View>
+              </View>
+
+              <View style={styles.statDividerVertical} />
+
+              <View style={styles.statItemCol}>
+                <Ionicons name="people-outline" size={20} color="#2D3F33" />
+                <View style={{ marginLeft: 8 }}>
+                  <Text style={styles.statVal}>{item.servings || '2 servings'}</Text>
+                  <Text style={styles.statLbl}>Serves</Text>
+                </View>
+              </View>
             </View>
 
-            <Text style={styles.detailSectionTitle}>Instructions</Text>
-            <View style={styles.listContainer}>
-              {[
-                '1. Heat olive oil in a pan, sauté onions and vegetables.',
-                '2. Add paneer cubes and season with salt, pepper, and herbs.',
-                '3. Toss for 5-7 minutes until lightly golden and serve warm.',
-              ].map((inst, idx) => (
-                <Text key={idx} style={styles.instructionText}>{inst}</Text>
-              ))}
+            {/* Clinical Benefit / Summary Callout Box */}
+            {item.benefits && (
+              <View style={{ backgroundColor: '#F4F0E6', padding: 14, borderRadius: 16, marginBottom: 20, borderLeftWidth: 3, borderLeftColor: '#2D3F33' }}>
+                <Text style={{ fontSize: 13, color: '#2D3F33', lineHeight: 19 }}>
+                  ✨ <Text style={{ fontWeight: '700' }}>Clinical Benefit:</Text> {item.benefits}
+                </Text>
+              </View>
+            )}
+
+            {/* Ingredients Section */}
+            <Text style={styles.detailSectionTitle}>Ingredients</Text>
+            <View style={{ marginBottom: 24 }}>
+              {ingredientsList.map((ing: string, idx: number) => {
+                const cleanIng = ing.replace(/^[•\-\*]\s*/, '');
+                return (
+                  <View key={idx} style={styles.ingredientRow}>
+                    <Text style={styles.bulletDotStyle}>•</Text>
+                    <Text style={styles.ingredientTextStyle}>{cleanIng}</Text>
+                  </View>
+                );
+              })}
             </View>
+
+            {/* Instructions Section */}
+            <Text style={styles.detailSectionTitle}>Instructions</Text>
+            <View style={{ marginBottom: 28 }}>
+              {instructionsList.map((inst: string, idx: number) => {
+                const stepNum = idx + 1;
+                const cleanInst = inst.replace(/^\d+[\.\)]\s*/, '');
+                return (
+                  <View key={idx} style={styles.instructionRow}>
+                    <Text style={styles.instructionNumStyle}>{stepNum}.</Text>
+                    <Text style={styles.instructionTextStyle}>{cleanInst}</Text>
+                  </View>
+                );
+              })}
+            </View>
+
+            {/* Bottom Full-Width Save Recipe Pill Button */}
+            <TouchableOpacity style={styles.saveRecipePillBtn} onPress={() => toggleSaveRecipe(item.id)} activeOpacity={0.85}>
+              <Ionicons name={isSaved ? 'bookmark' : 'bookmark-outline'} size={18} color="#FFF" style={{ marginRight: 8 }} />
+              <Text style={styles.saveRecipePillBtnText}>{isSaved ? 'Saved Recipe' : 'Save Recipe'}</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
-
-        <View style={styles.stickyBottomBar}>
-          <TouchableOpacity style={styles.saveRecipeBtn} onPress={() => toggleSaveRecipe('paneer')}>
-            <Ionicons name={isSaved ? 'bookmark' : 'bookmark-outline'} size={18} color="#FFF" style={{ marginRight: 8 }} />
-            <Text style={styles.saveRecipeBtnText}>{isSaved ? 'Saved Recipe' : 'Save Recipe'}</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   }
@@ -1833,10 +2254,10 @@ const styles = StyleSheet.create({
 
   // RECIPES & GROOMING STYLES
   filterPill: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#FAF7F2',
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -1856,17 +2277,17 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     marginBottom: 14,
   },
   searchInputWrap: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    height: 42,
+    backgroundColor: '#FAF7F2',
+    borderRadius: 24,
+    paddingHorizontal: 14,
+    height: 46,
     borderWidth: 1,
     borderColor: COLORS.border,
   },
@@ -1876,14 +2297,36 @@ const styles = StyleSheet.create({
     color: COLORS.textDark,
   },
   filterIconBtn: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#FAF7F2',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: COLORS.border,
+  },
+
+  generateAiRecipesBtn: {
+    backgroundColor: COLORS.primary,
+    borderRadius: 24,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+    shadowColor: '#2D3F33',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  generateAiRecipesBtnText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
 
   recipeGrid: {
@@ -1891,18 +2334,24 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
     justifyContent: 'space-between',
+    marginBottom: 20,
   },
   recipeGridCard: {
-    width: (width - 52) / 2,
+    width: '48%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: COLORS.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
   },
   recipeGridImg: {
     width: '100%',
-    height: 120,
+    height: 135,
   },
   heartBtn: {
     position: 'absolute',
@@ -1928,119 +2377,166 @@ const styles = StyleSheet.create({
 
   detailHeroContainer: {
     position: 'relative',
-    height: 240,
+    height: 250,
+    width: '100%',
   },
   detailHeroImg: {
     width: '100%',
     height: '100%',
+    resizeMode: 'cover',
   },
   detailBackBtn: {
     position: 'absolute',
-    top: 14,
-    left: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    top: 40,
+    left: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FAF8F5',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 3,
   },
   detailBookmarkBtn: {
     position: 'absolute',
-    top: 14,
-    right: 16,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.85)',
+    top: 40,
+    right: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: '#FAF8F5',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 3,
   },
   detailBodyContainer: {
-    paddingHorizontal: 20,
-    paddingTop: 18,
+    paddingHorizontal: 22,
+    paddingTop: 22,
+    backgroundColor: '#FBF9F5',
   },
   detailTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '700',
-    color: COLORS.textDark,
+    color: '#2D3F33',
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    marginBottom: 8,
   },
   tagsRow: {
     flexDirection: 'row',
-    gap: 6,
-    marginTop: 8,
-    marginBottom: 16,
+    flexWrap: 'wrap',
+    gap: 8,
+    marginTop: 4,
+    marginBottom: 20,
   },
   tagBadge: {
-    backgroundColor: COLORS.tagBg,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    backgroundColor: '#EFECE6',
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 18,
   },
   tagText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
-    color: COLORS.primary,
+    color: '#2D3F33',
   },
   statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: 20,
-  },
-  statItem: {
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14,
+    paddingHorizontal: 8,
+    backgroundColor: '#FBF9F5',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#EAE6DD',
+    marginBottom: 24,
+  },
+  statItemCol: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  statDividerVertical: {
+    width: 1,
+    height: 32,
+    backgroundColor: '#EAE6DD',
   },
   statVal: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '700',
-    color: COLORS.textDark,
-    marginTop: 2,
+    color: '#2D3F33',
   },
   statLbl: {
-    fontSize: 10,
-    color: COLORS.textMuted,
+    fontSize: 11,
+    color: '#8C8880',
+    marginTop: 1,
   },
   detailSectionTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '700',
-    color: COLORS.textDark,
-    marginTop: 12,
-    marginBottom: 8,
+    color: '#2D3F33',
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
+    marginTop: 8,
+    marginBottom: 12,
   },
-  listContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: 14,
-  },
-  listItemRow: {
+  ingredientRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 6,
+    marginBottom: 10,
   },
-  bulletDot: {
+  bulletDotStyle: {
+    fontSize: 16,
+    color: '#2D3F33',
+    marginRight: 10,
+    lineHeight: 22,
+  },
+  ingredientTextStyle: {
     fontSize: 14,
-    color: COLORS.primary,
-    marginRight: 8,
-  },
-  listText: {
-    fontSize: 13,
-    color: COLORS.textDark,
+    color: '#2D3F33',
+    lineHeight: 22,
     flex: 1,
   },
-  instructionText: {
-    fontSize: 13,
-    color: COLORS.textDark,
-    lineHeight: 20,
-    marginBottom: 8,
+  instructionRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  instructionNumStyle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#2D3F33',
+    marginRight: 8,
+    lineHeight: 22,
+  },
+  instructionTextStyle: {
+    fontSize: 14,
+    color: '#2D3F33',
+    lineHeight: 22,
+    flex: 1,
+  },
+  saveRecipePillBtn: {
+    backgroundColor: '#354B3C',
+    borderRadius: 28,
+    paddingVertical: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 12,
+    marginBottom: 24,
+  },
+  saveRecipePillBtnText: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '600',
   },
   stickyBottomBar: {
     position: 'absolute',

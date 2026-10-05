@@ -128,82 +128,242 @@ export default function WellnessPage() {
   const recipes = [
     {
       id: 'oats',
-      title: 'Overnight Oats',
-      tags: ['Breakfast', 'High Protein', 'Easy'],
+      title: 'Masala Berry Oats Porridge',
+      tags: ['Breakfast', 'Indian', 'High Protein'],
       prep: '15 mins',
       cook: '0 mins',
-      servings: '2 servings',
-      cal: '320 kcal',
+      servings: '1 serving',
+      cal: '350 kcal',
       cat: 'Breakfast',
-      img: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=600&auto=format&fit=crop',
+      img: '/recipe-1.jpg',
+      benefits: 'Rich in soluble fiber and antioxidants to stabilize morning glucose levels.',
       ingredients: [
         '1/2 cup rolled oats',
-        '1/2 cup milk (or almond milk)',
+        '1 cup almond milk',
+        '1/4 tsp cardamom powder',
+        '1/4 cup mixed berries',
         '1 tbsp chia seeds',
-        '1/2 banana',
-        '1 tsp honey (optional)',
-        'Toppings: berries, nuts',
       ],
       instructions: [
-        '1. In a jar, add oats, chia seeds and milk.',
-        '2. Mix well and refrigerate overnight.',
-        '3. Top with banana, berries and nuts before serving.',
+        '1. Cook oats in almond milk with cardamom for 5 minutes.',
+        '2. Remove from heat and stir well.',
+        '3. Top with fresh berries and chia seeds before serving warm.',
+      ],
+    },
+    {
+      id: 'salad',
+      title: 'Indian Kachumber Salad',
+      tags: ['Lunch', 'Low Carb', 'Indian'],
+      prep: '15 mins',
+      cook: '0 mins',
+      servings: '1 serving',
+      cal: '320 kcal',
+      cat: 'Lunch',
+      img: '/recipe-2.jpg',
+      benefits: 'Promotes digestive hydration and skin radiance.',
+      ingredients: [
+        '2 cups mixed greens',
+        '1 diced cucumber',
+        '1/2 cup cherry tomatoes',
+        '1/2 avocado',
+        '1 tbsp lemon juice & chaat masala',
+      ],
+      instructions: [
+        '1. Chop cucumber, tomatoes, and greens.',
+        '2. Toss with diced avocado in a serving bowl.',
+        '3. Drizzle with lemon juice and chaat masala.',
+      ],
+    },
+    {
+      id: 'quinoa_chicken',
+      title: 'Chicken Quinoa Khichdi',
+      tags: ['Lunch', 'High Protein', 'Indian'],
+      prep: '20 mins',
+      cook: '10 mins',
+      servings: '1 serving',
+      cal: '420 kcal',
+      cat: 'Lunch',
+      img: '/recipe-3.jpg',
+      benefits: 'Complete amino acid profile supporting lean muscle mass and digestive comfort.',
+      ingredients: [
+        '150g boneless chicken breast',
+        '1/2 cup quinoa',
+        '1/4 cup moong dal',
+        '1/2 tsp turmeric & ginger-garlic paste',
+        '1 tsp cow ghee',
+      ],
+      instructions: [
+        '1. Sauté ginger-garlic and turmeric in ghee.',
+        '2. Add diced chicken, quinoa, moong dal, and 2 cups water.',
+        '3. Simmer for 20 minutes until creamy.',
       ],
     },
     {
       id: 'paneer',
-      title: 'Paneer & Mixed Veg Bowl',
-      tags: ['Lunch', 'High Protein', 'Vegetarian'],
-      prep: '25 mins',
-      cook: '15 mins',
-      servings: '2 servings',
-      cal: '420 kcal',
-      cat: 'Lunch',
-      img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop',
-      ingredients: [
-        '100 g paneer',
-        '1/2 cup mixed vegetables (beans, carrot, capsicum)',
-        '1 tsp olive oil',
-        '1/2 onion, 1 tomato',
-        'Salt, pepper, herbs',
-      ],
-      instructions: [
-        '1. Heat olive oil in a pan, sauté onions and vegetables.',
-        '2. Add paneer cubes and season with salt, pepper, and herbs.',
-        '3. Toss for 5-7 minutes until lightly golden and serve warm.',
-      ],
-    },
-    {
-      id: 'quinoa',
-      title: 'Veg Quinoa Bowl',
-      tags: ['Dinner', 'Fiber Rich'],
-      prep: '20 mins',
-      cook: '15 mins',
-      servings: '2 servings',
-      cal: '380 kcal',
-      cat: 'Dinner',
-      img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600&auto=format&fit=crop',
-      ingredients: ['1 cup cooked quinoa', '1/2 cup roasted chickpeas', '1/2 avocado', 'Lemon dressing'],
-      instructions: ['Assemble cooked quinoa in a bowl, top with chickpeas & avocado. Drizzle lemon dressing.'],
-    },
-    {
-      id: 'soup',
-      title: 'Tomato Soup',
-      tags: ['Snacks', 'Low Calorie'],
+      title: 'Paneer & Broccoli Kadhai Stir-Fry',
+      tags: ['Dinner', 'High Protein', 'Vegetarian'],
       prep: '15 mins',
       cook: '10 mins',
       servings: '2 servings',
-      cal: '250 kcal',
+      cal: '450 kcal',
+      cat: 'Dinner',
+      img: '/recipe-4.jpg',
+      benefits: 'Abundant in calcium, zinc, and dietary fiber.',
+      ingredients: [
+        '140g fresh paneer cubes',
+        '1.5 cups broccoli florets',
+        '1/2 bell pepper',
+        '1/2 tsp cumin & garam masala',
+        '1 tsp mustard oil',
+      ],
+      instructions: [
+        '1. Sauté cumin, broccoli, and bell pepper in mustard oil for 4 minutes.',
+        '2. Add paneer cubes and mild kadhai spices.',
+        '3. Toss for 4 minutes until golden brown and serve hot.',
+      ],
+    },
+    {
+      id: 'soup',
+      title: 'Roasted Tomato Moong Dal Soup',
+      tags: ['Snacks', 'Low Calorie', 'Indian'],
+      prep: '10 mins',
+      cook: '15 mins',
+      servings: '2 servings',
+      cal: '240 kcal',
       cat: 'Snacks',
-      img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=600&auto=format&fit=crop',
-      ingredients: ['4 ripe tomatoes', '2 cloves garlic', 'Olive oil', 'Fresh basil'],
-      instructions: ['Roast tomatoes and garlic, blend smooth, simmer with basil for 10 minutes.'],
+      img: '/recipe-5.jpg',
+      benefits: 'High in lycopene and hydration to boost immune wellness.',
+      ingredients: [
+        '4 ripe tomatoes',
+        '1/4 cup yellow moong dal',
+        '2 garlic cloves',
+        '1/2 tsp roasted cumin powder',
+        '1 tsp ghee',
+      ],
+      instructions: [
+        '1. Roast tomatoes and boil moong dal until soft.',
+        '2. Blend together into a velvety soup.',
+        '3. Temper with ghee and cumin powder before serving.',
+      ],
+    },
+    {
+      id: 'salmon',
+      title: 'Tawa Pan-Seared Fish Tikka',
+      tags: ['Dinner', 'High Protein', 'Indian'],
+      prep: '10 mins',
+      cook: '10 mins',
+      servings: '1 serving',
+      cal: '440 kcal',
+      cat: 'Dinner',
+      img: '/recipe-6.jpg',
+      benefits: 'Packed with essential Omega-3 fatty acids for heart and skin health.',
+      ingredients: [
+        '160g fish fillet',
+        '2 tbsp hung curd',
+        '1 tsp kasuri methi & tikka masala',
+        '1 tbsp olive oil',
+        'Lemon wedges',
+      ],
+      instructions: [
+        '1. Marinate fish in hung curd, lemon, and tikka masala for 10 minutes.',
+        '2. Heat oil on a tawa or pan and sear fish for 4 minutes per side.',
+        '3. Garnish with lemon and serve hot.',
+      ],
+    },
+    {
+      id: 'smoothie',
+      title: 'Mango Berry Protein Lassi',
+      tags: ['Snacks', 'Indian', 'Post Workout'],
+      prep: '5 mins',
+      cook: '0 mins',
+      servings: '1 serving',
+      cal: '260 kcal',
+      cat: 'Snacks',
+      img: '/recipe-7.jpg',
+      benefits: 'Probiotic gut support and rapid post-workout recovery.',
+      ingredients: [
+        '1 cup fresh curd',
+        '1 scoop vanilla protein powder',
+        '1/2 cup mixed berries',
+        'Pinch of cardamom powder',
+      ],
+      instructions: [
+        '1. Add curd, protein powder, berries, and cardamom to blender.',
+        '2. Blend until creamy and smooth.',
+        '3. Pour into a chilled glass and serve.',
+      ],
     },
   ];
 
-  const filteredRecipes = recipes.filter(r => {
-    const matchCat = recipeCategory === 'All' || r.cat === recipeCategory;
-    const matchQuery = r.title.toLowerCase().includes(searchQuery.toLowerCase());
+  const resolveImageUri = (img: string | undefined, title: string = '', category: string = '', index: number = 0) => {
+    const map: Record<string, string> = {
+      '/recipe-1.jpg': 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?q=80&w=800&auto=format&fit=crop',
+      '/recipe-2.jpg': 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop',
+      '/recipe-3.jpg': 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?q=80&w=800&auto=format&fit=crop',
+      '/recipe-4.jpg': 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop',
+      '/recipe-5.jpg': 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=800&auto=format&fit=crop',
+      '/recipe-6.jpg': 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?q=80&w=800&auto=format&fit=crop',
+      '/recipe-7.jpg': 'https://images.unsplash.com/photo-1553530666-ba11a7da3888?q=80&w=800&auto=format&fit=crop',
+    };
+
+    if (img && typeof img === 'string') {
+      if (img.startsWith('http')) return img;
+      if (map[img]) return map[img];
+    }
+
+    const t = (title + ' ' + category).toLowerCase();
+    if (t.includes('oat') || t.includes('porridge') || t.includes('pancake')) return map['/recipe-1.jpg'];
+    if (t.includes('salad') || t.includes('bowl') || t.includes('green')) return map['/recipe-2.jpg'];
+    if (t.includes('chicken') || t.includes('poultry') || t.includes('meat')) return map['/recipe-3.jpg'];
+    if (t.includes('paneer') || t.includes('curry') || t.includes('tofu')) return map['/recipe-4.jpg'];
+    if (t.includes('soup') || t.includes('stew') || t.includes('broth')) return map['/recipe-5.jpg'];
+    if (t.includes('fish') || t.includes('salmon')) return map['/recipe-6.jpg'];
+    if (t.includes('smoothie') || t.includes('shake') || t.includes('drink')) return map['/recipe-7.jpg'];
+    
+    const defaults = Object.values(map);
+    return defaults[index % defaults.length];
+  };
+
+  const filteredRecipes = recipes.map((r, idx) => ({
+    ...r,
+    img: resolveImageUri(r.img, r.title, r.cat, idx)
+  })).filter(r => {
+    let matchCat = true;
+    if (recipeCategory !== 'All') {
+      const targetCat = recipeCategory.toLowerCase();
+      const itemCat = (r.cat || '').toLowerCase();
+      const itemTags = Array.isArray(r.tags) ? r.tags.map((t: string) => t.toLowerCase()) : [];
+
+      matchCat =
+        itemCat.includes(targetCat) ||
+        targetCat.includes(itemCat) ||
+        itemTags.some((t: string) => t.includes(targetCat) || targetCat.includes(t));
+
+      if (!matchCat) {
+        const titleLower = r.title.toLowerCase();
+        if (targetCat === 'breakfast') {
+          matchCat = titleLower.includes('oat') || titleLower.includes('pancake') || titleLower.includes('berry') || titleLower.includes('egg');
+        } else if (targetCat === 'lunch') {
+          matchCat = titleLower.includes('salad') || titleLower.includes('bowl') || titleLower.includes('chicken') || titleLower.includes('wrap');
+        } else if (targetCat === 'dinner') {
+          matchCat = titleLower.includes('paneer') || titleLower.includes('soup') || titleLower.includes('quinoa') || titleLower.includes('curry') || titleLower.includes('salmon');
+        } else if (targetCat === 'snacks') {
+          matchCat = titleLower.includes('tea') || titleLower.includes('fruit') || titleLower.includes('snack') || titleLower.includes('nut');
+        }
+      }
+    }
+
+    let matchQuery = true;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      const titleMatch = r.title.toLowerCase().includes(q);
+      const catMatch = (r.cat || '').toLowerCase().includes(q);
+      const tagMatch = Array.isArray(r.tags) && r.tags.some((t: string) => t.toLowerCase().includes(q));
+      const ingMatch = Array.isArray(r.ingredients) && r.ingredients.some((i: string) => i.toLowerCase().includes(q));
+      
+      matchQuery = titleMatch || catMatch || tagMatch || ingMatch;
+    }
+
     return matchCat && matchQuery;
   });
 
@@ -714,64 +874,90 @@ export default function WellnessPage() {
 
       {/* RECIPE DETAIL MODAL */}
       {selectedRecipeModal && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#F5F2EA] border border-[#ECE7DF] rounded-[32px] max-w-xl w-full overflow-hidden shadow-2xl space-y-6 max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#FBF9F5] border border-[#EAE6DD] rounded-[32px] max-w-lg w-full overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div className="relative h-64 shrink-0">
               <img src={selectedRecipeModal.img} alt={selectedRecipeModal.title} className="w-full h-full object-cover" />
               <button
                 onClick={() => setSelectedRecipeModal(null)}
-                className="absolute top-4 right-4 w-9 h-9 bg-white/80 backdrop-blur-md rounded-full flex items-center justify-center text-lg font-bold text-[#283B2E] hover:bg-white"
+                className="absolute top-4 left-4 w-10 h-10 bg-[#FAF8F5]/90 backdrop-blur-md rounded-full flex items-center justify-center text-lg text-[#2D3F33] hover:bg-white shadow-md transition-all"
               >
-                ✕
+                ‹
+              </button>
+              <button
+                onClick={() => toggleSave(selectedRecipeModal.title)}
+                className="absolute top-4 right-4 w-10 h-10 bg-[#FAF8F5]/90 backdrop-blur-md rounded-full flex items-center justify-center text-lg text-[#2D3F33] hover:bg-white shadow-md transition-all"
+              >
+                {savedRecipes[selectedRecipeModal.title] ? '♥' : '♡'}
               </button>
             </div>
 
             <div className="p-6 sm:p-8 space-y-6 overflow-y-auto flex-1">
               <div>
-                <h2 className="font-serif font-bold text-3xl text-[#283B2E]">{selectedRecipeModal.title}</h2>
-                <div className="flex gap-2 mt-2">
+                <h2 className="font-serif font-bold text-3xl text-[#2D3F33]">{selectedRecipeModal.title}</h2>
+                <div className="flex flex-wrap gap-2 mt-3">
                   {selectedRecipeModal.tags.map((t, idx) => (
-                    <span key={idx} className="text-[11px] font-semibold bg-[#EAE6DF] text-[#283B2E] px-3 py-1 rounded-full">
+                    <span key={idx} className="text-xs font-semibold bg-[#EFECE6] text-[#2D3F33] px-3.5 py-1.5 rounded-full">
                       {t}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 bg-white p-4 rounded-2xl border border-[#ECE7DF] text-center">
-                <div>
-                  <p className="text-[10px] text-[#657367] uppercase font-semibold">Prep Time</p>
-                  <p className="text-xs font-bold text-[#283B2E] mt-0.5">{selectedRecipeModal.prep}</p>
+              {/* 3-Column Stats Bar */}
+              <div className="grid grid-cols-3 divide-x divide-[#EAE6DD] border-y border-[#EAE6DD] py-3.5 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-base text-[#2D3F33]">⏱</span>
+                  <div className="text-left">
+                    <p className="text-xs font-bold text-[#2D3F33]">{selectedRecipeModal.prep}</p>
+                    <p className="text-[10px] text-[#8C8880]">Prep time</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] text-[#657367] uppercase font-semibold">Cook Time</p>
-                  <p className="text-xs font-bold text-[#283B2E] mt-0.5">{selectedRecipeModal.cook}</p>
+                <div className="flex items-center justify-center gap-2 pl-2">
+                  <span className="text-base text-[#2D3F33]">🍳</span>
+                  <div className="text-left">
+                    <p className="text-xs font-bold text-[#2D3F33]">{selectedRecipeModal.cook}</p>
+                    <p className="text-[10px] text-[#8C8880]">Cook time</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] text-[#657367] uppercase font-semibold">Servings</p>
-                  <p className="text-xs font-bold text-[#283B2E] mt-0.5">{selectedRecipeModal.servings}</p>
+                <div className="flex items-center justify-center gap-2 pl-2">
+                  <span className="text-base text-[#2D3F33]">👥</span>
+                  <div className="text-left">
+                    <p className="text-xs font-bold text-[#2D3F33]">{selectedRecipeModal.servings}</p>
+                    <p className="text-[10px] text-[#8C8880]">Serves</p>
+                  </div>
                 </div>
               </div>
 
+              {/* Clinical Benefit Callout */}
+              {selectedRecipeModal.benefits && (
+                <div className="bg-[#F4F0E6] border-l-4 border-[#2D3F33] p-4 rounded-2xl text-xs text-[#2D3F33] leading-relaxed">
+                  ✨ <span className="font-bold">Clinical Benefit:</span> {selectedRecipeModal.benefits}
+                </div>
+              )}
+
               <div>
-                <h3 className="font-serif font-bold text-lg text-[#283B2E] mb-2">Ingredients</h3>
-                <ul className="space-y-1.5 text-xs text-[#657367] bg-white p-4 rounded-2xl border border-[#ECE7DF]">
+                <h3 className="font-serif font-bold text-xl text-[#2D3F33] mb-3">Ingredients</h3>
+                <ul className="space-y-2 text-sm text-[#2D3F33]">
                   {selectedRecipeModal.ingredients.map((ing, idx) => (
-                    <li key={idx} className="flex items-center gap-2">
-                      <span className="text-[#283B2E]">•</span>
-                      <span>{ing}</span>
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="text-[#2D3F33] font-bold">•</span>
+                      <span>{ing.replace(/^[•\-\*]\s*/, '')}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               <div>
-                <h3 className="font-serif font-bold text-lg text-[#283B2E] mb-2">Instructions</h3>
-                <div className="space-y-2 text-xs text-[#657367] bg-white p-4 rounded-2xl border border-[#ECE7DF]">
+                <h3 className="font-serif font-bold text-xl text-[#2D3F33] mb-3">Instructions</h3>
+                <ol className="space-y-2.5 text-sm text-[#2D3F33]">
                   {selectedRecipeModal.instructions.map((inst, idx) => (
-                    <p key={idx} className="leading-relaxed">{inst}</p>
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="font-semibold text-[#2D3F33]">{idx + 1}.</span>
+                      <span className="leading-relaxed">{inst.replace(/^\d+[\.\)]\s*/, '')}</span>
+                    </li>
                   ))}
-                </div>
+                </ol>
               </div>
 
               <button
@@ -779,9 +965,10 @@ export default function WellnessPage() {
                   toggleSave(selectedRecipeModal.title);
                   setSelectedRecipeModal(null);
                 }}
-                className="w-full py-3 bg-[#283B2E] hover:bg-[#1E2D23] text-white text-xs font-semibold rounded-full transition-colors"
+                className="w-full py-4 bg-[#354B3C] hover:bg-[#2A3C30] text-white text-sm font-semibold rounded-full shadow-lg transition-colors flex items-center justify-center gap-2 mt-4"
               >
-                Save Recipe
+                <span>🔖</span>
+                <span>{savedRecipes[selectedRecipeModal.title] ? 'Saved Recipe' : 'Save Recipe'}</span>
               </button>
             </div>
           </div>

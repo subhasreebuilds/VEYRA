@@ -81,9 +81,16 @@ export class RecipesService {
     const promises = aiRecipesData.recipes.map(async (recipe: any, index: number) => {
       if (!recipe || typeof recipe !== 'object') return; // Skip malformed recipes
 
-      // Safely assign 1 of the 7 static local images (fallback to 1 if we somehow have >7 recipes)
-      const imageIndex = (index % 7) + 1;
-      recipe.image = `/recipe-${imageIndex}.jpg`;
+      // Ensure recipe has a unique ID instead of static placeholder string
+      if (!recipe.id || recipe.id === 'will_be_generated_by_db') {
+        recipe.id = `recipe_${Date.now()}_${index}_${Math.random().toString(36).substring(2, 6)}`;
+      }
+
+      // Preserve AI image URL if provided by AI service, otherwise assign fallback
+      if (!recipe.image || typeof recipe.image !== 'string' || !recipe.image.startsWith('http')) {
+        const imageIndex = (index % 7) + 1;
+        recipe.image = `/recipe-${imageIndex}.jpg`;
+      }
 
       try {
         // @ts-ignore
