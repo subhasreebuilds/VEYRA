@@ -112,14 +112,14 @@ export class SkinAnalysisService {
               price: rec.price || 'N/A',
               imageUrl: (() => {
                 const typeUpper = (rec.category || rec.type || title || '').toUpperCase();
+                if (typeUpper.includes('EYE') || typeUpper.includes('UNDEREYE')) return '/products/eye_cream.jpg';
                 if (typeUpper.includes('CLEANSER') || typeUpper.includes('WASH')) return '/products/cleanser.jpg';
                 if (typeUpper.includes('SERUM')) return '/products/serum.jpg';
-                if (typeUpper.includes('MOISTURIZER') || typeUpper.includes('CREAM') || typeUpper.includes('LOTION')) return '/products/moisturizer.jpg';
+                if (typeUpper.includes('MOISTURIZER') || typeUpper.includes('LOTION') || (typeUpper.includes('CREAM') && !typeUpper.includes('EYE'))) return '/products/moisturizer.jpg';
                 if (typeUpper.includes('SUNSCREEN') || typeUpper.includes('SPF') || typeUpper.includes('BLOCK')) return '/products/sunscreen.jpg';
                 if (typeUpper.includes('TONER')) return '/products/toner.jpg';
-                if (typeUpper.includes('EYE')) return '/products/eye_cream.jpg';
                 if (typeUpper.includes('TREATMENT') || typeUpper.includes('MASK') || typeUpper.includes('EXFOLIANT') || typeUpper.includes('PEEL')) return '/products/treatment.jpg';
-                return null;
+                return '/products/moisturizer.jpg';
               })()
             })
           }

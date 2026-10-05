@@ -138,8 +138,270 @@ export default function WellnessScreen() {
   const [savedRecipes, setSavedRecipes] = useState<Record<string, boolean>>({ oats: true, paneer: true });
   const [selectedDay, setSelectedDay] = useState('Mon');
   const [groomingCategory, setGroomingCategory] = useState('Skincare');
+  const [selectedGroomingItem, setSelectedGroomingItem] = useState<any>(null);
+  const [userSkinRecommendations, setUserSkinRecommendations] = useState<any[]>([]);
   const [lifestyleCategory, setLifestyleCategory] = useState('All');
   const [planType, setPlanType] = useState<'WEEKLY' | 'CUSTOM'>('WEEKLY');
+
+  const groomingItemsMap: Record<string, {
+    bannerTitle: string;
+    bannerSub: string;
+    bannerImg: string;
+    items: Array<{
+      id: string;
+      icon: string;
+      title: string;
+      sub: string;
+      productName: string;
+      productMeta: string;
+      productImg: string;
+      benefits: string[];
+      usageSteps: string[];
+      proTip: string;
+    }>;
+  }> = {
+    'Skincare': {
+      bannerTitle: 'Your Skincare Routine',
+      bannerSub: 'Simple. Effective. For your skin type.',
+      bannerImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600&auto=format&fit=crop',
+      items: [
+        {
+          id: 'cleanser',
+          icon: 'flask-outline',
+          title: 'Cleanser',
+          sub: 'Keep your skin fresh and clean',
+          productName: 'Gentle Hydrating Cleanser',
+          productMeta: 'Foaming • pH-Balanced • For all skin types',
+          productImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Removes excess oil, dirt & surface impurities',
+            'Soothes skin without stripping natural moisture barrier',
+            'Preps skin for optimal toner & serum absorption'
+          ],
+          usageSteps: [
+            'Cleanse your face with lukewarm water.',
+            'Apply a small amount into clean hands and lather.',
+            'Massage gently for 60 seconds and rinse.'
+          ],
+          proTip: 'Use morning and night. Avoid hot water to prevent drying out your skin barrier.'
+        },
+        {
+          id: 'toner',
+          icon: 'water-outline',
+          title: 'Toner',
+          sub: 'Balances pH and refreshes',
+          productName: 'Calming Botanical Toner',
+          productMeta: 'Alcohol-Free • Soothing • Hydrating',
+          productImg: 'https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Restores optimal skin pH balance',
+            'Refines pore structure and smooths texture',
+            'Instantly calms superficial redness and irritation'
+          ],
+          usageSteps: [
+            'Pour a few drops onto a cotton pad or palms.',
+            'Press gently into cleansed face and neck.',
+            'Allow 30 seconds to absorb completely.'
+          ],
+          proTip: 'Apply while skin is still slightly damp for deeper moisture penetration.'
+        },
+        {
+          id: 'moisturizer',
+          icon: 'sparkles-outline',
+          title: 'Moisturizer',
+          sub: 'Locks in hydration',
+          productName: 'Hydrating Face Moisturizer',
+          productMeta: 'Lightweight • Non-greasy • For all skin types',
+          productImg: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Provides long-lasting hydration',
+            'Keeps skin soft and smooth',
+            'Helps maintain skin barrier'
+          ],
+          usageSteps: [
+            'Cleanse your face.',
+            'Apply a small amount.',
+            'Massage gently until absorbed.'
+          ],
+          proTip: 'Use it twice daily for best results.'
+        },
+        {
+          id: 'sunscreen',
+          icon: 'sunny-outline',
+          title: 'Sunscreen',
+          sub: 'Protects from UV damage',
+          productName: 'Broad Spectrum SPF 50+',
+          productMeta: 'Invisible Finish • Water-Resistant • Anti-Pollution',
+          productImg: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Shields against UVA and UVB sun rays',
+            'Prevents photoaging, dark spots, and hyperpigmentation',
+            'Leaves a smooth matte finish without white cast'
+          ],
+          usageSteps: [
+            'Apply as the final step in your morning routine.',
+            'Dispense two finger-lengths of product.',
+            'Smooth evenly over face, neck, and ears.'
+          ],
+          proTip: 'Reapply every 2 hours when outdoors or after sweating.'
+        },
+        {
+          id: 'weekly_care',
+          icon: 'timer-outline',
+          title: 'Weekly Care',
+          sub: 'Exfoliation & face masks',
+          productName: 'AHAs/BHA Resurfacing Exfoliant',
+          productMeta: 'Gentle Exfoliant • Pore-Refining • Weekly Ritual',
+          productImg: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Unclogs deep pores and removes dead skin cells',
+            'Enhances skin radiance and evens tone',
+            'Promotes cellular renewal and collagen synthesis'
+          ],
+          usageSteps: [
+            'Apply a thin layer to clean, dry skin 1-2 times weekly.',
+            'Leave on for 10 minutes.',
+            'Rinse thoroughly with cool water and moisturize.'
+          ],
+          proTip: 'Always follow up with SPF 50 sunscreen the next morning.'
+        }
+      ]
+    },
+    'Hair Care': {
+      bannerTitle: 'Your Hair Care Routine',
+      bannerSub: 'Nourishing. Strengthening. For healthy locks.',
+      bannerImg: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?q=80&w=600&auto=format&fit=crop',
+      items: [
+        {
+          id: 'shampoo',
+          icon: 'water-outline',
+          title: 'Shampoo',
+          sub: 'Cleanses scalp & removes buildup',
+          productName: 'Scalp Balance Clarifying Shampoo',
+          productMeta: 'Sulfate-Free • Scalp Refresh • Biotin-Enriched',
+          productImg: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Gently lifts excess oil and product buildup',
+            'Stimulates healthy scalp circulation',
+            'Leaves hair feeling light, bouncy, and refreshed'
+          ],
+          usageSteps: [
+            'Thoroughly wet hair with lukewarm water.',
+            'Apply a small amount to roots and scalp.',
+            'Massage gently for 2 minutes and rinse clean.'
+          ],
+          proTip: 'Focus shampooing on your scalp, letting suds cleanse lengths naturally.'
+        },
+        {
+          id: 'conditioner',
+          icon: 'sparkles-outline',
+          title: 'Conditioner',
+          sub: 'Nourishes & detangles strands',
+          productName: 'Argan Repair Deep Conditioner',
+          productMeta: 'Deep Moisture • Anti-Frizz • Color-Safe',
+          productImg: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Instantly detangles and softens coarse ends',
+            'Seals hair cuticles to prevent split ends and breakage',
+            'Imparts natural glossy shine without weighing hair down'
+          ],
+          usageSteps: [
+            'Squeeze excess water from washed hair.',
+            'Apply from mid-lengths to ends.',
+            'Leave on for 2-3 minutes and rinse with cool water.'
+          ],
+          proTip: 'Rinse with cold water at the end to seal cuticles for maximum shine.'
+        },
+        {
+          id: 'hair_oil',
+          icon: 'leaf-outline',
+          title: 'Hair Oil & Serum',
+          sub: 'Strengthens roots & tames frizz',
+          productName: 'Nourishing Botanical Hair Oil',
+          productMeta: 'Cold-Pressed • Lightweight • Heat Protectant',
+          productImg: 'https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Nourishes hair follicles for denser growth',
+            'Tames unruly flyaways and shields from heat damage',
+            'Restores elastic strength to brittle strands'
+          ],
+          usageSteps: [
+            'Warm 2-3 drops between your palms.',
+            'Smooth evenly through damp or dry hair lengths.',
+            'Style as usual.'
+          ],
+          proTip: 'Use as a pre-wash scalp massage mask once a week for 30 minutes.'
+        }
+      ]
+    },
+    'Body Care': {
+      bannerTitle: 'Your Body Care Routine',
+      bannerSub: 'Hydrating. Smoothing. All-day protection.',
+      bannerImg: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600&auto=format&fit=crop',
+      items: [
+        {
+          id: 'body_wash',
+          icon: 'water-outline',
+          title: 'Body Wash',
+          sub: 'Gentle hydrating body cleanser',
+          productName: 'Creamy Shea Butter Body Wash',
+          productMeta: 'Hydrating • Paraben-Free • Sensitive Skin',
+          productImg: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Cleanses gently while maintaining moisture balance',
+            'Leaves skin feeling velvety soft and clean',
+            'Infused with natural essential oils for a calming aroma'
+          ],
+          usageSteps: [
+            'Apply to damp skin or a soft loofah.',
+            'Lather gently over entire body.',
+            'Rinse thoroughly with warm water.'
+          ],
+          proTip: 'Pat skin semi-dry after shower to lock in moisture immediately.'
+        },
+        {
+          id: 'body_lotion',
+          icon: 'heart-outline',
+          title: 'Body Lotion',
+          sub: '24-hour moisture barrier',
+          productName: 'Nourishing Ceramide Body Milk',
+          productMeta: 'Fast-Absorbing • Non-Sticky • 24h Barrier',
+          productImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Restores skin lipid barrier against dryness',
+            'Deeply hydrates rough elbows, knees, and heels',
+            'Absorbs instantly without greasy residue'
+          ],
+          usageSteps: [
+            'Dispense generous amount onto palms.',
+            'Massage over body in upward circular motions.',
+            'Allow 1-2 minutes to absorb before dressing.'
+          ],
+          proTip: 'Apply within 3 minutes of showering for maximum moisture lock-in.'
+        },
+        {
+          id: 'body_scrub',
+          icon: 'timer-outline',
+          title: 'Body Scrub',
+          sub: 'Exfoliates dead skin cells',
+          productName: 'Exfoliating Sea Salt Body Polish',
+          productMeta: 'Smoothing • Detoxifying • Weekly Ritual',
+          productImg: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Buffs away dry, flaking skin cells',
+            'Unclogs body pores and prevents strawberry skin',
+            'Reveals radiant, ultra-smooth touchable skin'
+          ],
+          usageSteps: [
+            'Scoop a handful of scrub onto wet skin in shower.',
+            'Gently polish skin using circular motions.',
+            'Rinse off completely.'
+          ],
+          proTip: 'Use 1-2 times weekly before applying body lotion.'
+        }
+      ]
+    }
+  };
 
   // Dynamic Nutrition Plan State
   const [nutritionPlan, setNutritionPlan] = useState<any>(DEFAULT_NUTRITION_PLAN);
@@ -382,7 +644,19 @@ export default function WellnessScreen() {
   useEffect(() => {
     loadNutritionPlan();
     loadRecipes();
+    loadSkinRecommendations();
   }, []);
+
+  const loadSkinRecommendations = async () => {
+    try {
+      const data = await fetchApi('/skin-analysis/latest/recommendations');
+      if (data && Array.isArray(data) && data.length > 0) {
+        setUserSkinRecommendations(data);
+      }
+    } catch (err) {
+      // Fallback to default recommendations
+    }
+  };
 
   const loadNutritionPlan = async () => {
     try {
@@ -1058,20 +1332,29 @@ export default function WellnessScreen() {
   // SCREEN 5: GROOMING SCREEN
   // ==========================================
   if (currentScreen === 'GROOMING') {
+    const activeGrooming = groomingItemsMap[groomingCategory] || groomingItemsMap['Skincare'];
+
     return (
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <TouchableOpacity style={styles.breadcrumbLink} onPress={() => setCurrentScreen('HUB')}>
-            <Ionicons name="chevron-back" size={14} color={COLORS.textMuted} style={{ marginRight: 4 }} />
-            <Text style={styles.breadcrumbText}>Grooming</Text>
-          </TouchableOpacity>
-          <Text style={styles.pageTitleSerif}>Grooming Guide</Text>
+      <View style={[styles.container, { backgroundColor: '#FBF9F5' }]}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
+          {/* Header Navigation */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+            <TouchableOpacity style={{ paddingRight: 12 }} onPress={() => setCurrentScreen('HUB')}>
+              <Ionicons name="arrow-back" size={22} color="#2D3F33" />
+            </TouchableOpacity>
+            <Text style={{ fontSize: 22, fontWeight: '700', color: '#2D3F33', fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' }}>
+              Grooming Guide
+            </Text>
+          </View>
+
+          {/* Category Filter Pills (Skincare, Hair Care, Body Care) */}
           <View style={styles.tabPillRow}>
             {['Skincare', 'Hair Care', 'Body Care'].map(cat => (
               <TouchableOpacity
                 key={cat}
                 style={[styles.tabPill, groomingCategory === cat && styles.tabPillActive]}
                 onPress={() => setGroomingCategory(cat)}
+                activeOpacity={0.8}
               >
                 <Text style={[styles.tabPillText, groomingCategory === cat && styles.tabPillTextActive]}>
                   {cat}
@@ -1080,63 +1363,38 @@ export default function WellnessScreen() {
             ))}
           </View>
 
+          {/* Dynamic Category Hero Banner */}
           <View style={styles.groomingBannerCard}>
             <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600&auto=format&fit=crop' }}
+              source={{ uri: activeGrooming.bannerImg }}
               style={styles.groomingBannerImg}
             />
             <View style={styles.groomingBannerOverlay}>
-              <Text style={styles.groomingBannerTitle}>Your Skincare Routine</Text>
-              <Text style={styles.groomingBannerSub}>Simple. Effective. For your skin type.</Text>
+              <Text style={styles.groomingBannerTitle}>{activeGrooming.bannerTitle}</Text>
+              <Text style={styles.groomingBannerSub}>{activeGrooming.bannerSub}</Text>
             </View>
           </View>
 
+          {/* Dynamic Routine Steps List */}
           <View style={{ gap: 10, marginTop: 12 }}>
-            {[
-              {
-                icon: 'flask',
-                title: 'Cleanser',
-                sub: 'Keep your skin fresh and clean',
-                screen: 'GROOMING_DETAIL',
-              },
-              {
-                icon: 'water',
-                title: 'Toner',
-                sub: 'Balances pH and refreshes',
-                screen: 'GROOMING_DETAIL',
-              },
-              {
-                icon: 'sparkles',
-                title: 'Moisturizer',
-                sub: 'Locks in hydration',
-                screen: 'GROOMING_DETAIL',
-              },
-              {
-                icon: 'sunny',
-                title: 'Sunscreen',
-                sub: 'Protects from UV damage',
-                screen: 'GROOMING_DETAIL',
-              },
-              {
-                icon: 'cut',
-                title: 'Weekly Care',
-                sub: 'Exfoliation & face masks',
-                screen: 'GROOMING_DETAIL',
-              },
-            ].map((step, idx) => (
+            {activeGrooming.items.map((step, idx) => (
               <TouchableOpacity
-                key={idx}
+                key={step.id || idx}
                 style={styles.routineStepCard}
-                onPress={() => setCurrentScreen(step.screen as ScreenType)}
+                onPress={() => {
+                  setSelectedGroomingItem(step);
+                  setCurrentScreen('GROOMING_DETAIL');
+                }}
+                activeOpacity={0.85}
               >
                 <View style={styles.routineIconCircle}>
-                  <Ionicons name={step.icon as any} size={18} color={COLORS.primary} />
+                  <Ionicons name={(step.icon || 'flask-outline') as any} size={22} color="#2D3F33" />
                 </View>
-                <View style={{ flex: 1, paddingHorizontal: 12 }}>
+                <View style={{ flex: 1, paddingHorizontal: 14 }}>
                   <Text style={styles.routineTitle}>{step.title}</Text>
                   <Text style={styles.routineSub}>{step.sub}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color={COLORS.textLight} />
+                <Ionicons name="chevron-forward" size={18} color="#2D3F33" />
               </TouchableOpacity>
             ))}
           </View>
@@ -1527,54 +1785,157 @@ export default function WellnessScreen() {
   // SCREEN 9: GROOMING DETAIL SCREEN
   // ==========================================
   if (currentScreen === 'GROOMING_DETAIL') {
+    const defaultMoisturizer = {
+      id: 'moisturizer',
+      title: 'Moisturizer',
+      productName: 'Hydrating Face Moisturizer',
+      productMeta: 'Lightweight • Non-greasy • For all skin types',
+      productImg: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop',
+      benefits: [
+        'Provides long-lasting hydration',
+        'Keeps skin soft and smooth',
+        'Helps maintain skin barrier'
+      ],
+      usageSteps: [
+        'Cleanse your face.',
+        'Apply a small amount.',
+        'Massage gently until absorbed.'
+      ],
+      proTip: 'Use it twice daily for best results.'
+    };
+
+    const baseItem = selectedGroomingItem || defaultMoisturizer;
+
+    // Search for user's AI-generated product recommendation from skin analysis scan
+    const matchingRec = userSkinRecommendations.find((r: any) => {
+      const typeUpper = (r.recommendationType || r.category || r.title || '').toUpperCase();
+      const itemIdUpper = (baseItem.id || baseItem.title || '').toUpperCase();
+
+      if (itemIdUpper.includes('MOISTURIZER') || itemIdUpper.includes('MOISTURISER')) {
+        return (typeUpper.includes('MOISTURIZER') || typeUpper.includes('MOISTURISER') || (typeUpper.includes('CREAM') && !typeUpper.includes('EYE'))) && !typeUpper.includes('EYE') && !typeUpper.includes('UNDEREYE');
+      }
+      if (itemIdUpper.includes('EYE') || itemIdUpper.includes('UNDEREYE')) {
+        return typeUpper.includes('EYE') || typeUpper.includes('UNDEREYE');
+      }
+      if (itemIdUpper.includes('CLEANSER')) {
+        return typeUpper.includes('CLEANSER') || typeUpper.includes('WASH');
+      }
+      if (itemIdUpper.includes('TONER')) {
+        return typeUpper.includes('TONER');
+      }
+      if (itemIdUpper.includes('SERUM')) {
+        return typeUpper.includes('SERUM');
+      }
+      if (itemIdUpper.includes('SUNSCREEN')) {
+        return typeUpper.includes('SUNSCREEN') || typeUpper.includes('SPF');
+      }
+      return typeUpper.includes(itemIdUpper) || itemIdUpper.includes(typeUpper);
+    });
+
+    let displayTitle = baseItem.productName || baseItem.title;
+    let displayMeta = baseItem.productMeta || 'Lightweight • Non-greasy • For all skin types';
+    let displayImg = baseItem.productImg || baseItem.img || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop';
+    let displayBenefits = baseItem.benefits || [
+      'Provides long-lasting hydration',
+      'Keeps skin soft and smooth',
+      'Helps maintain skin barrier'
+    ];
+    let displayProTip = baseItem.proTip || 'Use it twice daily for best results.';
+    let displaySteps = baseItem.usageSteps || [
+      'Cleanse your face.',
+      'Apply a small amount.',
+      'Massage gently until absorbed.'
+    ];
+
+    if (matchingRec) {
+      let instr: any = {};
+      try {
+        instr = typeof matchingRec.instructions === 'string' ? JSON.parse(matchingRec.instructions) : matchingRec.instructions || {};
+      } catch (e) {}
+
+      const rawBrand = (instr.brand && instr.brand !== 'Veyra Recommendation' && instr.brand !== 'Recommended Brand') ? instr.brand : '';
+      const rawName = instr.name || matchingRec.title || displayTitle;
+      
+      // Ensure brand and name are cleanly combined if brand is not already in name
+      if (rawBrand && !rawName.toLowerCase().includes(rawBrand.toLowerCase())) {
+        displayTitle = `${rawBrand} ${rawName}`;
+      } else {
+        displayTitle = rawName;
+      }
+
+      const priceTag = instr.price && instr.price !== 'N/A' ? ` • ${instr.currency || ''}${instr.price}` : '';
+      if (matchingRec.reason) {
+        displayMeta = rawBrand ? `${rawBrand}${priceTag} • For your skin barrier` : matchingRec.reason;
+        displayProTip = matchingRec.reason;
+        displayBenefits = [
+          matchingRec.reason,
+          ...(baseItem.benefits ? baseItem.benefits.slice(0, 2) : ['Provides long-lasting hydration', 'Helps maintain skin barrier'])
+        ];
+      }
+    }
+
     return (
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <TouchableOpacity style={styles.breadcrumbLink} onPress={() => setCurrentScreen('GROOMING')}>
-            <Ionicons name="chevron-back" size={14} color={COLORS.textMuted} style={{ marginRight: 4 }} />
-            <Text style={styles.breadcrumbText}>Grooming</Text>
-          </TouchableOpacity>
-          <Text style={styles.pageTitleSerif}>Grooming Detail</Text>
-          <View style={styles.productCard}>
+      <View style={[styles.container, { backgroundColor: '#FBF9F5' }]}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 60 }} showsVerticalScrollIndicator={false}>
+          {/* Header Navigation */}
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+            <TouchableOpacity style={{ paddingRight: 12 }} onPress={() => setCurrentScreen('GROOMING')} activeOpacity={0.8}>
+              <Ionicons name="arrow-back" size={22} color="#2D3F33" />
+            </TouchableOpacity>
+            <Text style={{ fontSize: 22, fontWeight: '700', color: '#2D3F33', fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif' }}>
+              Grooming Detail
+            </Text>
+          </View>
+
+          {/* Product Summary Card 1 */}
+          <View style={styles.groomingProductCard}>
             <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop' }}
-              style={styles.productImg}
+              source={{ uri: displayImg }}
+              style={styles.groomingProductImg}
+              resizeMode="contain"
             />
             <View style={{ flex: 1, paddingLeft: 14 }}>
-              <Text style={styles.productTitle}>Hydrating Face Moisturizer</Text>
-              <Text style={styles.productSub}>Lightweight • Non-greasy • For all skin types</Text>
+              <Text style={styles.groomingProductTitle}>{displayTitle}</Text>
+              <Text style={styles.groomingProductSub}>{displayMeta}</Text>
             </View>
           </View>
 
-          <Text style={styles.detailSectionTitle}>Benefits</Text>
-          <View style={styles.benefitsCard}>
-            {[
-              'Provides long-lasting hydration',
-              'Keeps skin soft and smooth',
-              'Helps maintain skin barrier',
-            ].map((b, idx) => (
-              <View key={idx} style={styles.benefitRow}>
-                <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} style={{ marginRight: 8 }} />
-                <Text style={styles.benefitText}>{b}</Text>
+          {/* Benefits Card 2 */}
+          <View style={styles.groomingSectionCard}>
+            <Text style={styles.groomingCardHeading}>Benefits</Text>
+            {displayBenefits.map((b: string, idx: number) => (
+              <View key={idx} style={styles.groomingCheckRow}>
+                <View style={styles.checkCircleBadge}>
+                  <Ionicons name="checkmark" size={12} color="#2D3F33" />
+                </View>
+                <Text style={styles.groomingCheckText}>{b}</Text>
               </View>
             ))}
           </View>
 
-          <Text style={styles.detailSectionTitle}>How to use</Text>
-          <View style={styles.howToCard}>
-            {[
-              '1. Cleanse your face.',
-              '2. Apply a small amount.',
-              '3. Massage gently until absorbed.',
-            ].map((step, idx) => (
-              <Text key={idx} style={styles.instructionText}>{step}</Text>
-            ))}
-          </View>
+          {/* How to use Card 3 */}
+          <View style={styles.groomingSectionCard}>
+            <Text style={styles.groomingCardHeading}>How to use</Text>
+            {displaySteps.map((step: string, idx: number) => {
+              const cleanStep = step.replace(/^\d+[\.\)]\s*/, '');
+              return (
+                <View key={idx} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 }}>
+                  <Text style={{ fontSize: 13, color: '#2D3F33', marginRight: 8, lineHeight: 20 }}>{idx + 1}.</Text>
+                  <Text style={{ fontSize: 13, color: '#2D3F33', lineHeight: 20, flex: 1 }}>{cleanStep}</Text>
+                </View>
+              );
+            })}
 
-          <View style={styles.proTipCard}>
-            <Text style={styles.proTipText}>
-              💡 <Text style={{ fontWeight: 'bold' }}>Pro tip:</Text> Use it twice daily for best results.
-            </Text>
+            {/* Pro tip Inside Card 3 */}
+            <View style={styles.proTipContainer}>
+              <View style={styles.proTipIconCircle}>
+                <Ionicons name="leaf-outline" size={20} color="#2D3F33" />
+              </View>
+              <View style={{ flex: 1, paddingLeft: 12 }}>
+                <Text style={styles.proTipTitle}>Pro tip</Text>
+                <Text style={styles.proTipSub}>{displayProTip}</Text>
+              </View>
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -2702,6 +3063,91 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.primary,
     marginTop: 2,
+  },
+
+  groomingProductCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F6F4EE',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 14,
+  },
+  groomingProductImg: {
+    width: 72,
+    height: 72,
+    borderRadius: 12,
+  },
+  groomingProductTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#2D3F33',
+    lineHeight: 22,
+  },
+  groomingProductSub: {
+    fontSize: 12,
+    color: '#637367',
+    marginTop: 4,
+    lineHeight: 18,
+  },
+  groomingSectionCard: {
+    backgroundColor: '#F6F4EE',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 14,
+  },
+  groomingCardHeading: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#2D3F33',
+    marginBottom: 14,
+  },
+  groomingCheckRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  checkCircleBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#E2E9DF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  groomingCheckText: {
+    fontSize: 13,
+    color: '#2D3F33',
+    paddingLeft: 10,
+    flex: 1,
+    lineHeight: 18,
+  },
+  proTipContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#EBE8E0',
+    borderRadius: 14,
+    padding: 14,
+    marginTop: 16,
+  },
+  proTipIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#DFD9CC',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  proTipTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#2D3F33',
+    marginBottom: 2,
+  },
+  proTipSub: {
+    fontSize: 12,
+    color: '#4D5C51',
+    lineHeight: 18,
   },
 
   productCard: {

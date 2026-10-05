@@ -279,9 +279,12 @@ export class AiService {
     if (systemPrompt.includes('generate STRICT structured JSON recommendations')) {
       return {
         recommendations: [
-          { category: "CLEANSER", brand: "CeraVe", name: "Hydrating Facial Cleanser", price: "$15.00", reason: "Soothes skin barrier." },
-          { category: "SERUM", brand: "The Ordinary", name: "Niacinamide 10% + Zinc 1%", price: "$7.00", reason: "Balances sebum equilibrium." },
-          { category: "MOISTURIZER", brand: "La Roche-Posay", name: "Toleriane Double Repair", price: "$22.00", reason: "Deep hydration." }
+          { category: "CLEANSER", brand: "CeraVe", name: "Hydrating Facial Cleanser", price: "₹450", reason: "Soothes skin barrier and gently purifies." },
+          { category: "TONER", brand: "Minimalist", name: "PHAs 3% Face Toner", price: "₹399", reason: "Refines pores and balances skin pH." },
+          { category: "SERUM", brand: "The Ordinary", name: "Niacinamide 10% + Zinc 1%", price: "₹600", reason: "Balances sebum equilibrium and evens skin tone." },
+          { category: "MOISTURIZER", brand: "La Roche-Posay", name: "Toleriane Double Repair Moisturizer", price: "₹850", reason: "Restores natural skin moisture barrier." },
+          { category: "SUNSCREEN", brand: "Dot & Key", name: "Vitamin C + E SPF 50 Sunscreen", price: "₹495", reason: "Broad-spectrum UV protection without white cast." },
+          { category: "EYE_CREAM", brand: "Hyphen", name: "Vitamin Infused Under Eye Cream", price: "₹425", reason: "Reduces dark circles and hydrates delicate eye area." }
         ],
         homeRemedies: [
           { name: "Honey & Oatmeal Mask", reason: "Calms superficial redness and hydrates." }
@@ -531,34 +534,69 @@ Your task is to generate STRICT structured JSON recommendations based on the use
 IMPORTANT RULES:
 - BE EXTREMELY CONCISE. Keep all reasons and descriptions to one short sentence to conserve tokens.
 - YOUR RECOMMENDATIONS MUST BE STRICTLY AND EXPLICITLY BASED ON THE USER'S OVERALL "SKIN HEALTH SCORE" AND THE DETAILED "METRICS" PROVIDED.
-- For Products, act as a knowledgeable skincare expert and recommend REAL, popular, and affordable products from trendy Indian brands (e.g., Dot & Key, Hyphen, Pilgrim, Minimalist, Plum).
-- Include the actual brand name, product name, and an estimated price in INR (e.g., "₹450"). Do NOT include URLs or stock info.
-- EXTREME TOKEN LIMIT: You MUST output exactly 3 product recommendations, exactly 1 home remedy, exactly 2 diet tips, and exactly 2 lifestyle tips. Any more will cause a crash.
-- Return ONLY valid JSON matching this exact structure, but filled with ACTUAL personalized recommendations for the user:
+- For Products, recommend REAL, popular, and affordable products from top skincare brands (e.g., Dot & Key, Hyphen, Minimalist, Plum, CeraVe, La Roche-Posay, The Ordinary).
+- Include product recommendations for ALL core grooming categories: CLEANSER, TONER, SERUM, MOISTURIZER, SUNSCREEN, and EYE_CREAM.
+- Include the actual brand name, product name, category, and an estimated price in INR (e.g., "₹450"). Do NOT include URLs or stock info.
+- Return ONLY valid JSON matching this exact structure:
 
 {
   "recommendations": [
     {
-      "category": "<e.g., CLEANSER, SERUM, MOISTURIZER>",
-      "brand": "<Real brand name, e.g. CeraVe>",
-      "name": "<Real product name>",
-      "price": "<Estimated price in USD, e.g. 15.00>",
-      "reason": "<Specific reason based on user's metrics>"
+      "category": "CLEANSER",
+      "brand": "CeraVe",
+      "name": "Hydrating Facial Cleanser",
+      "price": "₹450",
+      "reason": "Soothes skin barrier and gently purifies."
+    },
+    {
+      "category": "TONER",
+      "brand": "Minimalist",
+      "name": "PHAs 3% Face Toner",
+      "price": "₹399",
+      "reason": "Refines pores and balances skin pH."
+    },
+    {
+      "category": "SERUM",
+      "brand": "The Ordinary",
+      "name": "Niacinamide 10% + Zinc 1%",
+      "price": "₹600",
+      "reason": "Balances sebum equilibrium and evens skin tone."
+    },
+    {
+      "category": "MOISTURIZER",
+      "brand": "La Roche-Posay",
+      "name": "Toleriane Double Repair Moisturizer",
+      "price": "₹850",
+      "reason": "Restores natural skin moisture barrier."
+    },
+    {
+      "category": "SUNSCREEN",
+      "brand": "Dot & Key",
+      "name": "Vitamin C + E SPF 50 Sunscreen",
+      "price": "₹495",
+      "reason": "Broad-spectrum UV protection without white cast."
+    },
+    {
+      "category": "EYE_CREAM",
+      "brand": "Hyphen",
+      "name": "Vitamin Infused Under Eye Cream",
+      "price": "₹425",
+      "reason": "Reduces dark circles and hydrates delicate eye area."
     }
   ],
   "homeRemedies": [
     {
-      "name": "<DIY remedy name>",
-      "reason": "<Why it helps>"
+      "name": "Honey & Oatmeal Mask",
+      "reason": "Calms superficial redness and hydrates."
     }
   ],
   "diet": [
-    "<Dietary advice 1>",
-    "<Dietary advice 2>"
+    "Drink 3L of water daily",
+    "Increase omega-3 fatty acids intake"
   ],
   "lifestyle": [
-    "<Lifestyle advice 1>",
-    "<Lifestyle advice 2>"
+    "Ensure 8 hours of sleep",
+    "Change pillowcases twice weekly"
   ]
 }`;
 
