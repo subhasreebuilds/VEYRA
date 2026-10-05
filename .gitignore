@@ -9,3 +9,6 @@ applications/backend-api/src/generated/client
 applications/backend-api/prisma/schema.prisma
 .vercel
 .env*
+# Android build files
+*.apk
+*.aab
