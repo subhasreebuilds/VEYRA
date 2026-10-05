@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { fetchApi } from '../../../lib/api';
+import { fetchApi } from '../../lib/api';
 
 type TabType = 'HUB' | 'NUTRITION' | 'RECIPES' | 'GROOMING' | 'LIFESTYLE' | 'PLAN';
 
