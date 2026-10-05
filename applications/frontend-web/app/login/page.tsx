@@ -27,6 +27,7 @@ function LoginForm() {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
+      if (typeof window !== 'undefined') localStorage.setItem('veyra_logged_in', 'true');
       await refreshUser();
     } catch (err: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
       setError(err.message || 'Failed to login. Please check your credentials.');

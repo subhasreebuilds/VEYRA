@@ -58,6 +58,7 @@ export default function Register() {
           method: 'POST',
           body: JSON.stringify({ email, password }),
         });
+        if (typeof window !== 'undefined') localStorage.setItem('veyra_logged_in', 'true');
         await refreshUser();
         router.push('/onboarding');
       } catch (loginErr) {

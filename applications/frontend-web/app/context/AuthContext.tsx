@@ -32,8 +32,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshUser = async () => {
     try {
       setLoading(true);
+      // Pre-check if user has a logged in session marker to avoid unneeded 401 requests in incognito/logged-out state
+      const hasSession = typeof window !== 'undefined' && localStorage.getItem('veyra_logged_in') === 'true';
+      if (!hasSession) {
+        setUser(null);
+        setProfileComplete(false);
+        return;
+      }
+
       const userData = await fetchApi('/auth/me', { ignore401: true });
       if (!userData) {
+        if (typeof window !== 'undefined') localStorage.removeItem('veyra_logged_in');
         setUser(null);
         setProfileComplete(false);
         return;
@@ -48,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setProfileComplete(false);
       }
     } catch (error) {
+      if (typeof window !== 'undefined') localStorage.removeItem('veyra_logged_in');
       setUser(null);
       setProfileComplete(false);
     } finally {
@@ -65,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Logout error', error);
     } finally {
+      if (typeof window !== 'undefined') localStorage.removeItem('veyra_logged_in');
       setUser(null);
       setProfileComplete(false);
       router.push('/login');
