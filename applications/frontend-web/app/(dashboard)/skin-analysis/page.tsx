@@ -143,9 +143,9 @@ export default function SkinAnalysisPage() {
     const video = videoRef.current;
     const canvas = canvasRef.current;
     
-    // Resize to 1024x1024 for higher clinical clarity while maintaining token limits
-    const maxDim = 1024;
-    const scale = Math.min(maxDim / video.videoWidth, maxDim / video.videoHeight);
+    // Resize to 600x600 to ensure fast, lightweight upload under Vercel payload limits
+    const maxDim = 600;
+    const scale = Math.min(maxDim / video.videoWidth, maxDim / video.videoHeight, 1);
     canvas.width = video.videoWidth * scale;
     canvas.height = video.videoHeight * scale;
     
@@ -153,8 +153,8 @@ export default function SkinAnalysisPage() {
     if (!ctx) return;
     
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    // Compress JPEG to 0.85 quality for a crisp image
-    const base64Image = canvas.toDataURL('image/jpeg', 0.85);
+    // Compress JPEG to 0.6 quality for ultra-fast payload delivery (<100KB)
+    const base64Image = canvas.toDataURL('image/jpeg', 0.6);
 
     // Stop camera and transition to scanning state
     stopCamera();
@@ -175,9 +175,9 @@ export default function SkinAnalysisPage() {
       setScanComplete(true);
       setActiveTab('Overview');
       loadHistory(); // Refresh history
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to scan skin', err);
-      alert('Failed to analyze skin. Please try again.');
+      alert(err.message || 'Failed to analyze skin. Please try again.');
     } finally {
       setIsScanning(false);
     }
