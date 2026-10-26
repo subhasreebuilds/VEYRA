@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { fetchApi } from '../../lib/api';
 
 type TabType = 'HUB' | 'NUTRITION' | 'RECIPES' | 'GROOMING' | 'LIFESTYLE' | 'PLAN';
@@ -762,37 +763,209 @@ export default function WellnessPage() {
 
       {/* 5. GROOMING TAB */}
       {activeTab === 'GROOMING' && (
-        <div className="space-y-6">
-          <div className="bg-white border border-[#ECE7DF] rounded-[32px] p-6 sm:p-8">
-            <h2 className="font-serif font-bold text-2xl text-[#283B2E] mb-2">Essential Skincare & Grooming Guide</h2>
-            <p className="text-xs text-[#657367] mb-6">Simple, science-backed steps for radiant skin and hair care.</p>
+        <div className="space-y-8 animate-in fade-in duration-300">
+          {/* Header Banner */}
+          <div className="bg-[#FAF7F2] border border-[#ECE7DF] rounded-[32px] p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="space-y-2 max-w-xl">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#708264] bg-white px-3 py-1 rounded-full border border-[#ECE7DF]">
+                🧴 Curated Skincare & Grooming
+              </span>
+              <h2 className="font-serif font-bold text-2xl sm:text-3xl text-[#283B2E]">
+                Recommended Skincare Products
+              </h2>
+              <p className="text-xs sm:text-sm text-[#657367] leading-relaxed">
+                Formulated to support your daily barrier health, protect against UV damage, and hydrate delicate contours.
+              </p>
+            </div>
+            <Link
+              href="/grooming"
+              className="px-6 py-3 bg-[#334234] text-white rounded-full text-xs font-bold hover:bg-[#253226] transition-all shadow-sm shrink-0"
+            >
+              Open Grooming Timeline →
+            </Link>
+          </div>
 
+          {/* Recommended Products Grid with Toner, Sunscreen, Under-Eye Cream & Patches */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-center px-1">
+              <h3 className="font-serif font-bold text-xl text-[#283B2E]">
+                Core Skincare Routine Essentials
+              </h3>
+              <Link href="/products" className="text-xs font-bold text-[#334234] hover:underline">
+                View all products →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  id: 'toner',
+                  category: 'Toner',
+                  brand: 'Minimalist',
+                  name: 'PHAs 3% Pore Refining & pH Face Toner',
+                  price: '₹399',
+                  image: '/products/toner.jpg',
+                  rating: '★ 4.9',
+                  badge: 'Pore Tightening',
+                  benefit: 'Balances skin pH after cleansing, gently removes residual impurities, and refines pores without drying.',
+                  actives: ['Gluconolactone 3%', 'Niacinamide', 'Centella'],
+                },
+                {
+                  id: 'sunscreen',
+                  category: 'Sunscreen',
+                  brand: 'Dot & Key',
+                  name: 'Vitamin C + E SPF 50+ Broad-Spectrum Sunscreen',
+                  price: '₹495',
+                  image: '/products/sunscreen.jpg',
+                  rating: '★ 4.9',
+                  badge: 'Daily UV Shield',
+                  benefit: 'Shields skin against UVA/UVB photo-aging and dark spots without white cast or sticky residue.',
+                  actives: ['Zinc Oxide', 'Vitamin C', 'Vitamin E'],
+                },
+                {
+                  id: 'eye_patches',
+                  category: 'Eye Care & Patches',
+                  brand: 'Cosrx',
+                  name: 'Hydrogel Snail Mucin Cooling Eye Patches',
+                  price: '₹890',
+                  image: '/products/eye_patches.jpg',
+                  rating: '★ 4.9',
+                  badge: 'Instant Depuff',
+                  benefit: 'Cooling hydrogel patches that hydrate the orbital area, drain lymphatic fluid, and plump under-eye skin.',
+                  actives: ['Snail Secretion Filtrate', 'Niacinamide', 'Hyaluronic Acid'],
+                },
+                {
+                  id: 'eye_cream',
+                  category: 'Eye Care',
+                  brand: 'Hyphen',
+                  name: 'Vitamin Infused Under Eye Cream',
+                  price: '₹425',
+                  image: '/products/eye_cream.jpg',
+                  rating: '★ 4.8',
+                  badge: 'Dark Circle Care',
+                  benefit: 'Stimulates periorbital microcirculation to lighten dark circles and smooth delicate expression lines.',
+                  actives: ['Caffeine 3%', 'Peptides', 'Vitamin E'],
+                },
+                {
+                  id: 'cleanser',
+                  category: 'Cleanser',
+                  brand: 'CeraVe',
+                  name: 'Hydrating Facial Cleanser',
+                  price: '₹450',
+                  image: '/products/cleanser.jpg',
+                  rating: '★ 4.9',
+                  badge: 'Barrier Safe',
+                  benefit: 'Removes excess oil and pollutants without disrupting the protective moisture barrier.',
+                  actives: ['Ceramides 1, 3, 6-II', 'Hyaluronic Acid'],
+                },
+                {
+                  id: 'serum',
+                  category: 'Serum',
+                  brand: 'The Ordinary',
+                  name: 'Niacinamide 10% + Zinc 1% Daily Serum',
+                  price: '₹600',
+                  image: '/products/serum.jpg',
+                  rating: '★ 4.9',
+                  badge: 'Antioxidant Defense',
+                  benefit: 'Regulates sebum production, clears blemish triggers, and unifies uneven skin texture.',
+                  actives: ['Niacinamide 10%', 'Zinc PCA 1%'],
+                },
+              ].map((p) => (
+                <div
+                  key={p.id}
+                  className="bg-white rounded-[24px] border border-[#ECE7DF] p-5 shadow-sm hover:border-[#334234]/30 hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-3">
+                    <div className="relative w-full h-44 rounded-2xl overflow-hidden bg-[#FBF9F5] border border-[#ECE7DF]/60">
+                      <img
+                        src={p.image}
+                        alt={p.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <span className="absolute top-2.5 left-2.5 bg-white/90 backdrop-blur-md text-[10px] font-bold text-[#708264] px-2.5 py-0.5 rounded-full border border-[#ECE7DF]">
+                        {p.badge}
+                      </span>
+                      <span className="absolute top-2.5 right-2.5 bg-black/60 backdrop-blur-md text-[10px] font-bold text-white px-2 py-0.5 rounded-full">
+                        {p.rating}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#8A7970] block">
+                        {p.brand} • {p.category}
+                      </span>
+                      <h4 className="font-serif font-bold text-base text-[#283B2E] mt-0.5 leading-snug">
+                        {p.name}
+                      </h4>
+                      <p className="text-xs font-bold text-emerald-800 mt-1">{p.price}</p>
+                    </div>
+
+                    <p className="text-xs text-[#657367] leading-relaxed line-clamp-2">
+                      {p.benefit}
+                    </p>
+
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {p.actives.map((act) => (
+                        <span
+                          key={act}
+                          className="text-[10px] font-medium bg-[#FAF8F3] text-[#4E5C50] px-2 py-0.5 rounded-md border border-[#ECE7DF]"
+                        >
+                          {act}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#ECE7DF] flex items-center justify-between">
+                    <Link
+                      href="/grooming"
+                      className="text-xs font-bold text-[#334234] hover:underline"
+                    >
+                      Use in Timeline →
+                    </Link>
+                    <Link
+                      href="/products"
+                      className="text-[11px] font-semibold text-[#8A7970] hover:text-[#1F1916]"
+                    >
+                      Details
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skincare Principles & Layering Guide */}
+          <div className="bg-white border border-[#ECE7DF] rounded-[32px] p-6 sm:p-8 space-y-4">
+            <h3 className="font-serif font-bold text-xl text-[#283B2E]">
+              Clinical Skincare Guidelines
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
-                  title: 'Cleanser',
+                  title: 'Cleanse Gently',
                   desc: 'Removes impurities and excess oil without stripping natural moisture.',
-                  tip: 'Use morning and evening.',
+                  tip: 'Twice daily with lukewarm water.',
                   icon: '🧴',
                 },
                 {
-                  title: 'Hydrating Face Moisturizer',
-                  desc: 'Locks in deep hydration, restores skin barrier, and soft texture.',
-                  tip: 'Lightweight & non-greasy.',
+                  title: 'Tone & Treat',
+                  desc: 'Balances pH and delivers potent antioxidants deep into epidermal layers.',
+                  tip: 'Layer from thinnest to thickest.',
                   icon: '✨',
                 },
                 {
-                  title: 'Sunscreen (SPF 50)',
-                  desc: 'Shields skin against UVA/UVB photo-aging and dark spots.',
-                  tip: 'Apply daily before sunlight.',
+                  title: 'Shield & Protect',
+                  desc: 'Locks in hydration and forms a barrier against UVA/UVB photo-aging.',
+                  tip: 'Never skip daily sunscreen.',
                   icon: '☀️',
                 },
               ].map((g, idx) => (
-                <div key={idx} className="bg-[#FAF8F3] p-6 rounded-2xl border border-[#ECE7DF] space-y-3">
-                  <div className="text-3xl">{g.icon}</div>
-                  <h3 className="font-serif font-bold text-lg text-[#283B2E]">{g.title}</h3>
+                <div key={idx} className="bg-[#FAF8F3] p-5 rounded-2xl border border-[#ECE7DF] space-y-2.5">
+                  <div className="text-2xl">{g.icon}</div>
+                  <h4 className="font-serif font-bold text-base text-[#283B2E]">{g.title}</h4>
                   <p className="text-xs text-[#657367] leading-relaxed">{g.desc}</p>
-                  <div className="bg-[#EAE6DF] text-[#283B2E] text-[11px] font-semibold px-3 py-1.5 rounded-lg inline-block">
+                  <div className="bg-[#EAE6DF] text-[#283B2E] text-[10px] font-semibold px-2.5 py-1 rounded-lg inline-block">
                     💡 {g.tip}
                   </div>
                 </div>

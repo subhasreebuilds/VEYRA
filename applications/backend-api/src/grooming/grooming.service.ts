@@ -91,6 +91,7 @@ export class GroomingService {
           const title = rec.name || rec.title || rec.category || 'Product Recommendation';
           const typeUpper = (rec.category || rec.type || title || '').toUpperCase();
           const img = (() => {
+            if (typeUpper.includes('PATCH') || typeUpper.includes('UNDEREYE_PATCH')) return '/products/eye_patches.jpg';
             if (typeUpper.includes('EYE') || typeUpper.includes('UNDEREYE')) return '/products/eye_cream.jpg';
             if (typeUpper.includes('CLEANSER') || typeUpper.includes('WASH')) return '/products/cleanser.jpg';
             if (typeUpper.includes('SERUM')) return '/products/serum.jpg';

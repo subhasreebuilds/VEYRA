@@ -42,6 +42,17 @@ export default function ProductsPage() {
         let instr: any = {};
         try { instr = JSON.parse(r.instructions || '{}'); } catch(e) {}
         
+        const typeUpper = ((r.recommendationType || '') + ' ' + (instr.name || '') + ' ' + (r.title || '')).toUpperCase();
+        const img = instr.imageUrl || (() => {
+          if (typeUpper.includes('PATCH') || typeUpper.includes('UNDEREYE_PATCH')) return '/products/eye_patches.jpg';
+          if (typeUpper.includes('EYE') || typeUpper.includes('UNDEREYE')) return '/products/eye_cream.jpg';
+          if (typeUpper.includes('TONER') || typeUpper.includes('ASTRINGENT')) return '/products/toner.jpg';
+          if (typeUpper.includes('SUNSCREEN') || typeUpper.includes('SPF') || typeUpper.includes('BLOCK')) return '/products/sunscreen.jpg';
+          if (typeUpper.includes('CLEANSER') || typeUpper.includes('WASH')) return '/products/cleanser.jpg';
+          if (typeUpper.includes('SERUM')) return '/products/serum.jpg';
+          return '/products/moisturizer.jpg';
+        })();
+
         return {
           id: r.id,
           name: instr.name || r.title,
@@ -50,7 +61,7 @@ export default function ProductsPage() {
           matchScore: 90 + Math.floor(Math.random() * 9),
           price: (instr.currency || '₹') + (instr.price || 'N/A'),
           size: 'Standard',
-          image: instr.imageUrl || '/products/serum.jpg',
+          image: img,
           actives: [],
           whyChosen: r.reason || r.description,
           rating: 4.5 + (Math.random() * 0.5),
@@ -68,7 +79,7 @@ export default function ProductsPage() {
     }
   };
 
-  const categories = ['All', 'Cleansers', 'Serums & Actives', 'Moisturizers', 'Sun Protection', 'Supplements'];
+  const categories = ['All', 'Cleansers', 'Toners', 'Serums & Actives', 'Moisturizers', 'Sun Protection', 'Eye Care & Patches'];
 
   const toggleRoutine = (id: string, name: string) => {
     setProducts(prev => prev.map(p => {

@@ -545,50 +545,178 @@ export default function SkinAnalysisPage() {
             {/* TAB CONTENT: Products */}
             {activeTab === 'Products' && (
               <div className="space-y-6 animate-in fade-in duration-300">
-                <h3 className="text-[20px] font-serif text-[#1F2922]">Recommended for your skin</h3>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <h3 className="text-[20px] font-serif text-[#1F2922]">Recommended for your skin</h3>
+                    <p className="text-xs text-[#5C6B61]">Personalized based on your biomarkers, sensitivity index, and hydration levels.</p>
+                  </div>
+                  <Link
+                    href="/grooming"
+                    className="text-xs font-bold text-[#516454] bg-[#FAF8F5] border border-[#E0E2DF] px-4 py-2 rounded-full hover:bg-[#F2EFEA] transition-colors shrink-0"
+                  >
+                    View in Grooming Timeline →
+                  </Link>
+                </div>
                 
-                {recommendations.filter(r => r.category === 'SKINCARE').length === 0 && !isRegenerating && (
-                  <p className="text-sm text-[#869188]">No matching products available yet. Try regenerating recommendations.</p>
-                )}
+                {(() => {
+                  const skincareList = recommendations.filter(r => r.category === 'SKINCARE');
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {recommendations.filter(r => r.category === 'SKINCARE').map(r => {
-                    const productData = r.instructions ? JSON.parse(r.instructions) : null;
-                    if (!productData) {
-                      return null;
+                  const defaultProducts = [
+                    {
+                      id: 'def-toner',
+                      name: 'PHAs 3% Pore Refining & pH Face Toner',
+                      brand: 'Minimalist',
+                      type: 'TONER',
+                      price: '₹399',
+                      imageUrl: '/products/toner.jpg',
+                      reason: 'Balances skin pH after cleansing, gently purifies pores, and optimizes serum absorption.'
+                    },
+                    {
+                      id: 'def-sunscreen',
+                      name: 'Vitamin C + E SPF 50+ Broad-Spectrum Sunscreen',
+                      brand: 'Dot & Key',
+                      type: 'SUNSCREEN',
+                      price: '₹495',
+                      imageUrl: '/products/sunscreen.jpg',
+                      reason: 'Provides essential broad-spectrum photoprotection against UVA/UVB photo-aging without white cast.'
+                    },
+                    {
+                      id: 'def-eye-patches',
+                      name: 'Hydrogel Snail Mucin Cooling Eye Patches',
+                      brand: 'Cosrx',
+                      type: 'EYE PATCHES',
+                      price: '₹890',
+                      imageUrl: '/products/eye_patches.jpg',
+                      reason: 'Delivers instant cooling hydration to delicate orbital tissues, draining fluid retention and plumping lines.'
+                    },
+                    {
+                      id: 'def-eye-cream',
+                      name: 'Vitamin Infused Under Eye Cream',
+                      brand: 'Hyphen',
+                      type: 'EYE CREAM',
+                      price: '₹425',
+                      imageUrl: '/products/eye_cream.jpg',
+                      reason: 'Targets persistent dark circles and hydrates the fragile periorbital barrier.'
+                    },
+                    {
+                      id: 'def-cleanser',
+                      name: 'Hydrating Facial Cleanser',
+                      brand: 'CeraVe',
+                      type: 'CLEANSER',
+                      price: '₹450',
+                      imageUrl: '/products/cleanser.jpg',
+                      reason: 'Soothes skin barrier, dissolves excess overnight oil, and gently purifies without stripping.'
+                    },
+                    {
+                      id: 'def-serum',
+                      name: 'Niacinamide 10% + Zinc 1% Daily Serum',
+                      brand: 'The Ordinary',
+                      type: 'SERUM',
+                      price: '₹600',
+                      imageUrl: '/products/serum.jpg',
+                      reason: 'Regulates sebum activity, minimizes enlarged pores, and promotes an even, glowing skin tone.'
+                    },
+                    {
+                      id: 'def-moisturizer',
+                      name: 'Toleriane Double Repair Face Moisturizer',
+                      brand: 'La Roche-Posay',
+                      type: 'MOISTURIZER',
+                      price: '₹850',
+                      imageUrl: '/products/moisturizer.jpg',
+                      reason: 'Restores the epidermal lipid shield and provides long-lasting 48-hour barrier hydration.'
                     }
+                  ];
 
-                    return (
-                      <div key={r.id} className="border border-[#F0EFEB] rounded-[16px] p-5 hover:border-[#516454]/30 transition-colors cursor-pointer flex flex-col gap-4 bg-white relative overflow-hidden group">
-                        <div className="flex items-start gap-4">
-                          {productData.imageUrl ? (
-                             <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative bg-[#F4F6F4]">
-                               <img src={productData.imageUrl} alt={productData.name} className="object-cover w-full h-full" />
-                             </div>
-                          ) : (
-                            <div className="bg-[#FAF8F5] w-16 h-16 flex items-center justify-center rounded-xl text-xl flex-shrink-0">
-                              {r.recommendationType.includes('CLEAN') ? '🧴' : '💧'}
+                  const itemsToDisplay = skincareList.length > 0 ? skincareList.map(r => {
+                    let productData: any = {};
+                    try { productData = JSON.parse(r.instructions || '{}'); } catch(e) {}
+                    const typeUpper = ((r.recommendationType || '') + ' ' + (productData.name || '') + ' ' + (r.title || '')).toUpperCase();
+                    const img = productData.imageUrl || (() => {
+                      if (typeUpper.includes('PATCH') || typeUpper.includes('UNDEREYE_PATCH')) return '/products/eye_patches.jpg';
+                      if (typeUpper.includes('EYE') || typeUpper.includes('UNDEREYE')) return '/products/eye_cream.jpg';
+                      if (typeUpper.includes('TONER') || typeUpper.includes('ASTRINGENT')) return '/products/toner.jpg';
+                      if (typeUpper.includes('SUNSCREEN') || typeUpper.includes('SPF') || typeUpper.includes('BLOCK')) return '/products/sunscreen.jpg';
+                      if (typeUpper.includes('CLEANSER') || typeUpper.includes('WASH')) return '/products/cleanser.jpg';
+                      if (typeUpper.includes('SERUM')) return '/products/serum.jpg';
+                      return '/products/moisturizer.jpg';
+                    })();
+
+                    return {
+                      id: r.id,
+                      name: productData.name || r.title,
+                      brand: productData.brand || 'Veyra Recommendation',
+                      type: r.recommendationType || 'SKINCARE',
+                      price: productData.price || 'N/A',
+                      currency: productData.currency || '',
+                      imageUrl: img,
+                      reason: r.reason || r.description || 'Matched to your skin health score and concerns.'
+                    };
+                  }) : defaultProducts;
+
+                  return (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {itemsToDisplay.map((p) => (
+                        <div
+                          key={p.id}
+                          className="border border-[#F0EFEB] rounded-[20px] p-5 hover:border-[#516454]/40 hover:shadow-sm transition-all flex flex-col justify-between gap-4 bg-white relative overflow-hidden group"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shrink-0 relative bg-[#FAF8F5] border border-[#ECE7DF] shadow-sm">
+                              <img
+                                src={p.imageUrl}
+                                alt={p.name}
+                                className="object-cover w-full h-full"
+                              />
                             </div>
-                          )}
-                          
-                          <div className="flex-1 min-w-0">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-[#869188] mb-1 block truncate">{productData.brand} • {r.recommendationType}</span>
-                            <h4 className="text-[14px] font-bold text-[#1F2922] mb-1 truncate">{productData.name}</h4>
-                            <p className="text-[12px] text-[#5C6B61] font-medium">{productData.currency} {productData.price}</p>
+                            
+                            <div className="flex-1 min-w-0 space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-[#708264] block truncate">
+                                  {p.brand} • {p.type}
+                                </span>
+                                <span className="text-[10px] text-emerald-700 font-bold ml-auto shrink-0">★ 4.9</span>
+                              </div>
+                              <h4 className="text-[14px] font-serif font-bold text-[#1F2922] truncate leading-tight">
+                                {p.name}
+                              </h4>
+                              <p className="text-[12px] text-[#5C6B61] font-semibold">
+                                {p.price}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#F0EFEB]">
+                            <p className="text-[10px] font-bold text-[#516454] mb-1 flex items-center gap-1 uppercase tracking-wider">
+                              <svg className="w-3 h-3 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14H8a4 4 0 01-.8-7.92 4.01 4.01 0 017.6 0A4 4 0 0112 14z" />
+                              </svg>
+                              Why Veyra Recommends It
+                            </p>
+                            <p className="text-[11px] text-[#5C6B61] leading-relaxed line-clamp-2">
+                              {p.reason}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between pt-1 border-t border-[#F0EFEB]">
+                            <Link
+                              href="/grooming"
+                              className="text-[11px] font-bold text-[#516454] hover:underline flex items-center gap-1"
+                            >
+                              <span>Use in Routine</span>
+                              <span>→</span>
+                            </Link>
+                            <Link
+                              href="/products"
+                              className="text-[11px] font-medium text-[#869188] hover:text-[#1F2922]"
+                            >
+                              Product Details
+                            </Link>
                           </div>
                         </div>
-
-                        <div className="bg-[#FAF8F5] p-3 rounded-xl border border-[#F0EFEB]/50">
-                          <p className="text-[11px] font-bold text-[#516454] mb-1 flex items-center gap-1">
-                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                             Why Veyra recommends it
-                          </p>
-                          <p className="text-[12px] text-[#5C6B61] leading-relaxed line-clamp-2">{r.reason || 'Matches your specific skin profile and concerns.'}</p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 

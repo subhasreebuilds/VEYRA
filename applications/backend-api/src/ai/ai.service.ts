@@ -284,7 +284,8 @@ export class AiService {
           { category: "SERUM", brand: "The Ordinary", name: "Niacinamide 10% + Zinc 1%", price: "₹600", reason: "Balances sebum equilibrium and evens skin tone." },
           { category: "MOISTURIZER", brand: "La Roche-Posay", name: "Toleriane Double Repair Moisturizer", price: "₹850", reason: "Restores natural skin moisture barrier." },
           { category: "SUNSCREEN", brand: "Dot & Key", name: "Vitamin C + E SPF 50 Sunscreen", price: "₹495", reason: "Broad-spectrum UV protection without white cast." },
-          { category: "EYE_CREAM", brand: "Hyphen", name: "Vitamin Infused Under Eye Cream", price: "₹425", reason: "Reduces dark circles and hydrates delicate eye area." }
+          { category: "EYE_CREAM", brand: "Hyphen", name: "Vitamin Infused Under Eye Cream", price: "₹425", reason: "Reduces dark circles and hydrates delicate eye area." },
+          { category: "EYE_PATCHES", brand: "Cosrx", name: "Hydrogel Snail Mucin Eye Patches", price: "₹890", reason: "Instantly depuffs, cools, and plumps tired under-eye bags." }
         ],
         homeRemedies: [
           { name: "Honey & Oatmeal Soothing Mask", reason: "Calms superficial redness, replenishes moisture, and gently soothes inflamed pores." },
