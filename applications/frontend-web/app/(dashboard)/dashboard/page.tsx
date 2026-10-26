@@ -269,7 +269,7 @@ export default function Dashboard() {
 
           <div className="pt-3 border-t border-[#E8DCD2] text-center">
             <Link href="/grooming" className="text-xs font-bold text-[#334234] hover:underline">
-              View full morning & evening routine →
+              View full morning, night & remedies timeline →
             </Link>
           </div>
         </div>
@@ -285,7 +285,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { name: 'Skin Analysis', icon: '✨', href: '/skin-analysis', desc: 'AI scan & score' },
-            { name: 'Grooming & Routine', icon: '🌿', href: '/grooming', desc: 'Step-by-step rituals' },
+            { name: 'Grooming & Routine', icon: '🌿', href: '/grooming', desc: 'Timeline to-do rituals' },
             { name: 'Nutrition Plan', icon: '🥗', href: '/nutrition', desc: 'Tailored calorie & macros' },
             { name: 'Smart Recipes', icon: '🍳', href: '/recipes', desc: 'Fresh curated meals' },
           ].map((action) => (

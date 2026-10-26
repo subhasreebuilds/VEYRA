@@ -143,6 +143,12 @@ export class SkinAnalysisService {
     if (Array.isArray(homeCareList)) {
       for (const rec of homeCareList) {
         const fields = extractFields(rec, 'Home Care Advice');
+        const img = (() => {
+          const t = (fields.title || '').toUpperCase();
+          if (t.includes('EYE') || t.includes('CUCUMBER')) return '/products/eye_cream.jpg';
+          if (t.includes('TEA') || t.includes('TONER') || t.includes('MIST')) return '/products/toner.jpg';
+          return '/products/treatment.jpg';
+        })();
         const created = await this.prisma.skinRecommendation.create({
           data: {
             skinAnalysisId: latestScan.id,
@@ -152,6 +158,13 @@ export class SkinAnalysisService {
             description: fields.description,
             reason: fields.reason,
             priority: rec.priority || 'NORMAL',
+            instructions: JSON.stringify({
+              name: fields.title,
+              brand: 'Natural Home Remedy',
+              currency: '',
+              price: 'Home Crafted',
+              imageUrl: img
+            })
           }
         });
         createdRecommendations.push(created);

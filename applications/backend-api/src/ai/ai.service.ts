@@ -287,7 +287,9 @@ export class AiService {
           { category: "EYE_CREAM", brand: "Hyphen", name: "Vitamin Infused Under Eye Cream", price: "₹425", reason: "Reduces dark circles and hydrates delicate eye area." }
         ],
         homeRemedies: [
-          { name: "Honey & Oatmeal Mask", reason: "Calms superficial redness and hydrates." }
+          { name: "Honey & Oatmeal Soothing Mask", reason: "Calms superficial redness, replenishes moisture, and gently soothes inflamed pores." },
+          { name: "Green Tea & Botanical Soothing Compress", reason: "Rich in botanical antioxidants to reduce redness and regulate daytime sebum." },
+          { name: "Chilled Cucumber & Rose Water Under-Eye Therapy", reason: "De-puffs tired eyes, drains lymphatic fluid, and cools delicate skin." }
         ],
         diet: ["Drink 3L of water daily", "Increase omega-3 fatty acids intake"],
         lifestyle: ["Ensure 8 hours of sleep", "Change pillowcases twice weekly"]

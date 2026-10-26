@@ -137,7 +137,7 @@ export default function WellnessScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [savedRecipes, setSavedRecipes] = useState<Record<string, boolean>>({ oats: true, paneer: true });
   const [selectedDay, setSelectedDay] = useState('Mon');
-  const [groomingCategory, setGroomingCategory] = useState('Skincare');
+  const [groomingCategory, setGroomingCategory] = useState('Morning');
   const [selectedGroomingItem, setSelectedGroomingItem] = useState<any>(null);
   const [userSkinRecommendations, setUserSkinRecommendations] = useState<any[]>([]);
   const [lifestyleCategory, setLifestyleCategory] = useState('All');
@@ -160,244 +160,274 @@ export default function WellnessScreen() {
       proTip: string;
     }>;
   }> = {
-    'Skincare': {
-      bannerTitle: 'Your Skincare Routine',
-      bannerSub: 'Simple. Effective. For your skin type.',
+    'Morning': {
+      bannerTitle: 'Your Morning Timeline',
+      bannerSub: 'Cleanse, balance, and shield your skin for the day ahead.',
       bannerImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600&auto=format&fit=crop',
       items: [
         {
           id: 'cleanser',
           icon: 'flask-outline',
-          title: 'Cleanser',
-          sub: 'Keep your skin fresh and clean',
-          productName: 'Gentle Hydrating Cleanser',
-          productMeta: 'Foaming • pH-Balanced • For all skin types',
+          title: 'Gentle Morning Cleanse',
+          sub: '07:00 AM • Clear overnight sebum',
+          productName: 'CeraVe Hydrating Facial Cleanser',
+          productMeta: 'Hydrating • pH-Balanced • Non-comedogenic',
           productImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
           benefits: [
-            'Removes excess oil, dirt & surface impurities',
-            'Soothes skin without stripping natural moisture barrier',
-            'Preps skin for optimal toner & serum absorption'
+            'Soothes skin barrier and gently purifies without stripping moisture',
+            'Removes overnight oil and prepares skin for toner and serums',
+            'Enriched with essential ceramides and hyaluronic acid'
           ],
           usageSteps: [
-            'Cleanse your face with lukewarm water.',
-            'Apply a small amount into clean hands and lather.',
-            'Massage gently for 60 seconds and rinse.'
+            'Cleanse face with lukewarm water.',
+            'Lather a small pump in clean hands.',
+            'Massage in gentle circular motions for 60 seconds and rinse.'
           ],
-          proTip: 'Use morning and night. Avoid hot water to prevent drying out your skin barrier.'
+          proTip: 'Never use hot water, which weakens your epidermal lipid barrier.'
         },
         {
           id: 'toner',
           icon: 'water-outline',
-          title: 'Toner',
-          sub: 'Balances pH and refreshes',
-          productName: 'Calming Botanical Toner',
-          productMeta: 'Alcohol-Free • Soothing • Hydrating',
+          title: 'Pore Refining & pH Prep',
+          sub: '07:05 AM • Balance skin pH',
+          productName: 'Minimalist PHAs 3% Face Toner',
+          productMeta: 'Alcohol-Free • Pore Refining • Hydrating',
           productImg: 'https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=400&auto=format&fit=crop',
           benefits: [
-            'Restores optimal skin pH balance',
-            'Refines pore structure and smooths texture',
-            'Instantly calms superficial redness and irritation'
+            'Restores optimal skin pH balance immediately after cleansing',
+            'Refines pore structure and gently exfoliates surface roughness',
+            'Calms redness and optimizes cellular moisture channels'
           ],
           usageSteps: [
-            'Pour a few drops onto a cotton pad or palms.',
-            'Press gently into cleansed face and neck.',
-            'Allow 30 seconds to absorb completely.'
+            'Pour 3-4 drops into palm or onto a soft cotton pad.',
+            'Gently press into face and neck.',
+            'Wait 30 seconds for full absorption.'
           ],
-          proTip: 'Apply while skin is still slightly damp for deeper moisture penetration.'
+          proTip: 'Apply while skin is still slightly damp for maximum hydration.'
+        },
+        {
+          id: 'serum',
+          icon: 'sparkles-outline',
+          title: 'Antioxidant Daily Shield Serum',
+          sub: '07:10 AM • Environmental defense',
+          productName: 'The Ordinary Niacinamide 10% + Zinc 1%',
+          productMeta: 'Antioxidant • Sebum Control • Tone Evening',
+          productImg: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Defends against oxidative stress and free radical damage',
+            'Balances sebum equilibrium and minimizes enlarged pores',
+            'Improves visible clarity and skin texture'
+          ],
+          usageSteps: [
+            'Dispense 3-4 drops across forehead and cheeks.',
+            'Pat gently until completely absorbed.'
+          ],
+          proTip: 'Let serum absorb for 1 minute before layering moisturizer.'
         },
         {
           id: 'moisturizer',
-          icon: 'sparkles-outline',
-          title: 'Moisturizer',
-          sub: 'Locks in hydration',
-          productName: 'Hydrating Face Moisturizer',
-          productMeta: 'Lightweight • Non-greasy • For all skin types',
-          productImg: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop',
+          icon: 'leaf-outline',
+          title: 'Barrier Hydrating Moisturizer',
+          sub: '07:15 AM • Lock in hydration',
+          productName: 'La Roche-Posay Toleriane Double Repair',
+          productMeta: 'Ceramide-Rich • Lightweight • Barrier Seal',
+          productImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
           benefits: [
-            'Provides long-lasting hydration',
-            'Keeps skin soft and smooth',
-            'Helps maintain skin barrier'
+            'Locks in serum actives and prevents moisture evaporation',
+            'Provides 24-hour hydration without greasy residue',
+            'Reinforces the skin’s natural lipid defense shield'
           ],
           usageSteps: [
-            'Cleanse your face.',
-            'Apply a small amount.',
-            'Massage gently until absorbed.'
+            'Take a dime-sized amount.',
+            'Smooth evenly over face and neck in upward strokes.'
           ],
-          proTip: 'Use it twice daily for best results.'
+          proTip: 'Don’t forget the neck area—it shows signs of dryness first.'
         },
         {
           id: 'sunscreen',
           icon: 'sunny-outline',
-          title: 'Sunscreen',
-          sub: 'Protects from UV damage',
-          productName: 'Broad Spectrum SPF 50+',
-          productMeta: 'Invisible Finish • Water-Resistant • Anti-Pollution',
+          title: 'Broad-Spectrum UV Defense',
+          sub: '07:20 AM • Essential photoprotection',
+          productName: 'Dot & Key Vitamin C + E SPF 50',
+          productMeta: 'Broad-Spectrum SPF 50 • PA+++ • Zero White Cast',
           productImg: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=400&auto=format&fit=crop',
           benefits: [
-            'Shields against UVA and UVB sun rays',
-            'Prevents photoaging, dark spots, and hyperpigmentation',
-            'Leaves a smooth matte finish without white cast'
+            'Shields against UVA & UVB rays that trigger dark spots and aging',
+            'Formulated with Vitamin C to boost antioxidant photoprotection',
+            'Non-comedogenic, matte finish suitable for daily wear'
           ],
           usageSteps: [
-            'Apply as the final step in your morning routine.',
-            'Dispense two finger-lengths of product.',
-            'Smooth evenly over face, neck, and ears.'
+            'Dispense two finger-lengths of sunscreen.',
+            'Apply generously over face, ears, and back of neck.',
+            'Allow 10 minutes to set before heading outside.'
           ],
-          proTip: 'Reapply every 2 hours when outdoors or after sweating.'
-        },
-        {
-          id: 'weekly_care',
-          icon: 'timer-outline',
-          title: 'Weekly Care',
-          sub: 'Exfoliation & face masks',
-          productName: 'AHAs/BHA Resurfacing Exfoliant',
-          productMeta: 'Gentle Exfoliant • Pore-Refining • Weekly Ritual',
-          productImg: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=400&auto=format&fit=crop',
-          benefits: [
-            'Unclogs deep pores and removes dead skin cells',
-            'Enhances skin radiance and evens tone',
-            'Promotes cellular renewal and collagen synthesis'
-          ],
-          usageSteps: [
-            'Apply a thin layer to clean, dry skin 1-2 times weekly.',
-            'Leave on for 10 minutes.',
-            'Rinse thoroughly with cool water and moisturize.'
-          ],
-          proTip: 'Always follow up with SPF 50 sunscreen the next morning.'
+          proTip: 'Reapply every 2-3 hours if outdoors under direct sunlight.'
         }
       ]
     },
-    'Hair Care': {
-      bannerTitle: 'Your Hair Care Routine',
-      bannerSub: 'Nourishing. Strengthening. For healthy locks.',
-      bannerImg: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?q=80&w=600&auto=format&fit=crop',
+    'Night': {
+      bannerTitle: 'Your Night Timeline',
+      bannerSub: 'Deep cleanse, active repair, and overnight barrier regeneration.',
+      bannerImg: 'https://images.unsplash.com/photo-1512290900672-1f4864c2957b?q=80&w=600&auto=format&fit=crop',
       items: [
         {
-          id: 'shampoo',
+          id: 'cleanser_night',
+          icon: 'flask-outline',
+          title: 'Evening Deep Purifying Cleanse',
+          sub: '09:00 PM • Dissolve SPF and pollution',
+          productName: 'CeraVe Hydrating Facial Cleanser',
+          productMeta: 'Deep Purifying • Gentle Foam • Barrier Safe',
+          productImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Breaks down stubborn sunscreen, airborne pollutants, and grime',
+            'Unclogs pores without stripping essential surface lipids',
+            'Prepares clean canvas for high-potency night treatments'
+          ],
+          usageSteps: [
+            'Massage into damp skin for 60 seconds.',
+            'Rinse thoroughly with lukewarm water and pat dry.'
+          ],
+          proTip: 'Double cleanse if wearing heavy sunscreen or after commuting.'
+        },
+        {
+          id: 'toner_night',
           icon: 'water-outline',
-          title: 'Shampoo',
-          sub: 'Cleanses scalp & removes buildup',
-          productName: 'Scalp Balance Clarifying Shampoo',
-          productMeta: 'Sulfate-Free • Scalp Refresh • Biotin-Enriched',
-          productImg: 'https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=400&auto=format&fit=crop',
-          benefits: [
-            'Gently lifts excess oil and product buildup',
-            'Stimulates healthy scalp circulation',
-            'Leaves hair feeling light, bouncy, and refreshed'
-          ],
-          usageSteps: [
-            'Thoroughly wet hair with lukewarm water.',
-            'Apply a small amount to roots and scalp.',
-            'Massage gently for 2 minutes and rinse clean.'
-          ],
-          proTip: 'Focus shampooing on your scalp, letting suds cleanse lengths naturally.'
-        },
-        {
-          id: 'conditioner',
-          icon: 'sparkles-outline',
-          title: 'Conditioner',
-          sub: 'Nourishes & detangles strands',
-          productName: 'Argan Repair Deep Conditioner',
-          productMeta: 'Deep Moisture • Anti-Frizz • Color-Safe',
-          productImg: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=400&auto=format&fit=crop',
-          benefits: [
-            'Instantly detangles and softens coarse ends',
-            'Seals hair cuticles to prevent split ends and breakage',
-            'Imparts natural glossy shine without weighing hair down'
-          ],
-          usageSteps: [
-            'Squeeze excess water from washed hair.',
-            'Apply from mid-lengths to ends.',
-            'Leave on for 2-3 minutes and rinse with cool water.'
-          ],
-          proTip: 'Rinse with cold water at the end to seal cuticles for maximum shine.'
-        },
-        {
-          id: 'hair_oil',
-          icon: 'leaf-outline',
-          title: 'Hair Oil & Serum',
-          sub: 'Strengthens roots & tames frizz',
-          productName: 'Nourishing Botanical Hair Oil',
-          productMeta: 'Cold-Pressed • Lightweight • Heat Protectant',
+          title: 'Balancing Night Prep Toner',
+          sub: '09:05 PM • Cell turnover prep',
+          productName: 'Minimalist PHAs 3% Face Toner',
+          productMeta: 'Gentle PHA • Exfoliating • pH 3.8',
           productImg: 'https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=400&auto=format&fit=crop',
           benefits: [
-            'Nourishes hair follicles for denser growth',
-            'Tames unruly flyaways and shields from heat damage',
-            'Restores elastic strength to brittle strands'
+            'Removes micro-residue left behind after cleansing',
+            'Gently dissolves keratin bridges to boost night repair penetration',
+            'Maintains skin barrier moisture levels overnight'
           ],
           usageSteps: [
-            'Warm 2-3 drops between your palms.',
-            'Smooth evenly through damp or dry hair lengths.',
-            'Style as usual.'
+            'Apply 3-4 drops across face with gentle pressing motions.'
           ],
-          proTip: 'Use as a pre-wash scalp massage mask once a week for 30 minutes.'
+          proTip: 'Avoid rubbing aggressively; let the gentle actives soak in.'
+        },
+        {
+          id: 'serum_night',
+          icon: 'sparkles-outline',
+          title: 'Cellular Regeneration Serum',
+          sub: '09:10 PM • Overnight active repair',
+          productName: 'The Ordinary Niacinamide 10% + Zinc 1%',
+          productMeta: 'Cellular Renewal • Blemish Repair • 10% Active',
+          productImg: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Promotes collagen synthesis and accelerates blemish healing',
+            'Balances sebum production so you wake up with balanced skin',
+            'Strengthens cellular resilience and evens pigmentation'
+          ],
+          usageSteps: [
+            'Apply 3 drops across cheeks, forehead, and chin.',
+            'Gently press in using fingertips.'
+          ],
+          proTip: 'Use consistently every night for visible pore tightening within 2 weeks.'
+        },
+        {
+          id: 'eye_cream',
+          icon: 'eye-outline',
+          title: 'Under-Eye Night Recovery',
+          sub: '09:15 PM • Orbital hydration & dark circles',
+          productName: 'Hyphen Vitamin Infused Under Eye Cream',
+          productMeta: 'Peptides & Caffeine • Anti-Dark Circle • Hydrating',
+          productImg: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Hydrates delicate periorbital tissue prone to fine lines',
+            'Helps drain microvascular pooling to reduce dark circles',
+            'Firms under-eye contours while you sleep'
+          ],
+          usageSteps: [
+            'Dispense a grain-of-rice size amount.',
+            'Dab gently along the orbital bone using your ring finger.'
+          ],
+          proTip: 'Always use your ring finger—it applies the lightest natural pressure.'
+        },
+        {
+          id: 'moisturizer_night',
+          icon: 'moon-outline',
+          title: 'Overnight Barrier Restoration Crème',
+          sub: '09:20 PM • Prevent overnight moisture loss',
+          productName: 'La Roche-Posay Toleriane Double Repair',
+          productMeta: 'Ceramides & Niacinamide • Rich Seal • 48h Hydration',
+          productImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Forms a breathable lipid seal to prevent transepidermal water loss',
+            'Soothes inflammation and repairs environmental micro-damage',
+            'Leaves skin plump, soft, and glowing by morning'
+          ],
+          usageSteps: [
+            'Warm between palms and massage gently over face and neck.'
+          ],
+          proTip: 'Sleep on a clean silk or satin pillowcase to minimize friction.'
         }
       ]
     },
-    'Body Care': {
-      bannerTitle: 'Your Body Care Routine',
-      bannerSub: 'Hydrating. Smoothing. All-day protection.',
+    'Home Remedies': {
+      bannerTitle: 'Natural Home Remedies',
+      bannerSub: 'Kitchen-crafted botanical therapies directly matched to your skin.',
       bannerImg: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600&auto=format&fit=crop',
       items: [
         {
-          id: 'body_wash',
-          icon: 'water-outline',
-          title: 'Body Wash',
-          sub: 'Gentle hydrating body cleanser',
-          productName: 'Creamy Shea Butter Body Wash',
-          productMeta: 'Hydrating • Paraben-Free • Sensitive Skin',
-          productImg: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=400&auto=format&fit=crop',
-          benefits: [
-            'Cleanses gently while maintaining moisture balance',
-            'Leaves skin feeling velvety soft and clean',
-            'Infused with natural essential oils for a calming aroma'
-          ],
-          usageSteps: [
-            'Apply to damp skin or a soft loofah.',
-            'Lather gently over entire body.',
-            'Rinse thoroughly with warm water.'
-          ],
-          proTip: 'Pat skin semi-dry after shower to lock in moisture immediately.'
-        },
-        {
-          id: 'body_lotion',
-          icon: 'heart-outline',
-          title: 'Body Lotion',
-          sub: '24-hour moisture barrier',
-          productName: 'Nourishing Ceramide Body Milk',
-          productMeta: 'Fast-Absorbing • Non-Sticky • 24h Barrier',
-          productImg: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=400&auto=format&fit=crop',
-          benefits: [
-            'Restores skin lipid barrier against dryness',
-            'Deeply hydrates rough elbows, knees, and heels',
-            'Absorbs instantly without greasy residue'
-          ],
-          usageSteps: [
-            'Dispense generous amount onto palms.',
-            'Massage over body in upward circular motions.',
-            'Allow 1-2 minutes to absorb before dressing.'
-          ],
-          proTip: 'Apply within 3 minutes of showering for maximum moisture lock-in.'
-        },
-        {
-          id: 'body_scrub',
-          icon: 'timer-outline',
-          title: 'Body Scrub',
-          sub: 'Exfoliates dead skin cells',
-          productName: 'Exfoliating Sea Salt Body Polish',
-          productMeta: 'Smoothing • Detoxifying • Weekly Ritual',
+          id: 'honey_mask',
+          icon: 'leaf-outline',
+          title: 'Honey & Oatmeal Soothing Mask',
+          sub: '08:00 PM • 15 min • Calms redness',
+          productName: 'Raw Honey & Colloidal Oatmeal Pack',
+          productMeta: 'Natural DIY Mask • Anti-Inflammatory • Hydrating',
           productImg: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=400&auto=format&fit=crop',
           benefits: [
-            'Buffs away dry, flaking skin cells',
-            'Unclogs body pores and prevents strawberry skin',
-            'Reveals radiant, ultra-smooth touchable skin'
+            'Raw honey acts as a natural humectant and antibacterial agent',
+            'Colloidal oats contain beta-glucan to soothe skin inflammation',
+            'Replenishes essential moisture and softens rough dry patches'
           ],
           usageSteps: [
-            'Scoop a handful of scrub onto wet skin in shower.',
-            'Gently polish skin using circular motions.',
-            'Rinse off completely.'
+            'Mix 1 tablespoon of raw honey with 1 tablespoon of ground oats.',
+            'Apply an even layer over cleansed face.',
+            'Relax for 15 minutes, then rinse gently with lukewarm water.'
           ],
-          proTip: 'Use 1-2 times weekly before applying body lotion.'
+          proTip: 'Use 1-2 times weekly for a natural, calm complexion.'
+        },
+        {
+          id: 'green_tea_compress',
+          icon: 'water-outline',
+          title: 'Chilled Green Tea Botanical Compress',
+          sub: '08:20 PM • 10 min • Sebum control',
+          productName: 'Chilled Green Tea & Aloe Vera Mist',
+          productMeta: 'Antioxidant Compress • EGCG Rich • Pore Tightening',
+          productImg: 'https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Rich in catechins (EGCG) that regulate excess oil production',
+            'Tones enlarged pores and diminishes superficial redness',
+            'Provides immediate cooling relief to sun-stressed skin'
+          ],
+          usageSteps: [
+            'Brew a cup of pure green tea and chill in the refrigerator.',
+            'Soak two clean cotton pads in the cold green tea.',
+            'Place over cheeks, forehead, or T-zone for 10 minutes.'
+          ],
+          proTip: 'Keep a spray bottle of green tea in the fridge for an instant soothing spritz.'
+        },
+        {
+          id: 'cucumber_rose_therapy',
+          icon: 'eye-outline',
+          title: 'Cucumber & Rose Water Eye Therapy',
+          sub: '08:35 PM • 10 min • De-puff tired eyes',
+          productName: 'Chilled Cucumber & Damask Rose Water',
+          productMeta: 'Lymphatic Drainage • Ascorbic Acid • Refreshing',
+          productImg: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=400&auto=format&fit=crop',
+          benefits: [
+            'Cucumber’s natural caffeic acid reduces lymphatic fluid retention',
+            'Rose water balances delicate eye-area pH and soothes tiredness',
+            'Instantly refreshes dark circles after long screen time'
+          ],
+          usageSteps: [
+            'Slice cold cucumber rounds and dip lightly in pure rose water.',
+            'Rest comfortably and place over closed eyelids for 10 minutes.'
+          ],
+          proTip: 'Perform before bed to relax facial muscles and drift into deep sleep.'
         }
       ]
     }
@@ -1332,7 +1362,7 @@ export default function WellnessScreen() {
   // SCREEN 5: GROOMING SCREEN
   // ==========================================
   if (currentScreen === 'GROOMING') {
-    const activeGrooming = groomingItemsMap[groomingCategory] || groomingItemsMap['Skincare'];
+    const activeGrooming = groomingItemsMap[groomingCategory] || groomingItemsMap['Morning'];
 
     return (
       <View style={[styles.container, { backgroundColor: '#FBF9F5' }]}>
@@ -1347,9 +1377,9 @@ export default function WellnessScreen() {
             </Text>
           </View>
 
-          {/* Category Filter Pills (Skincare, Hair Care, Body Care) */}
+          {/* Category Filter Pills (Morning, Night, Home Remedies) */}
           <View style={styles.tabPillRow}>
-            {['Skincare', 'Hair Care', 'Body Care'].map(cat => (
+            {['Morning', 'Night', 'Home Remedies'].map(cat => (
               <TouchableOpacity
                 key={cat}
                 style={[styles.tabPill, groomingCategory === cat && styles.tabPillActive]}
