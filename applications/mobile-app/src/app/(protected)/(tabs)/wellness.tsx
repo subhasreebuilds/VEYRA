@@ -52,19 +52,19 @@ type ScreenType =
   | 'NUTRITION_PLAN'
   | 'LIFESTYLE_TIPS';
 
-// Product Image Fallbacks for React Native (Remote HTTPS URIs)
+// Product Image Fallbacks for React Native (Remote HTTPS URIs - Unique for every category)
 const PRODUCT_IMAGE_FALLBACKS: Record<string, string> = {
   toner: 'https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=600&auto=format&fit=crop',
   sunscreen: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=600&auto=format&fit=crop',
   eye_patches: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600&auto=format&fit=crop',
   eye_cream: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=600&auto=format&fit=crop',
-  cleanser: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600&auto=format&fit=crop',
+  cleanser: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=600&auto=format&fit=crop',
   serum: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop',
-  moisturizer: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600&auto=format&fit=crop',
-  treatment: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=600&auto=format&fit=crop',
-  honey: 'https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=600&auto=format&fit=crop',
-  tea: 'https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=600&auto=format&fit=crop',
-  cucumber: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=600&auto=format&fit=crop',
+  moisturizer: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=600&auto=format&fit=crop',
+  treatment: 'https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=600&auto=format&fit=crop',
+  honey: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?q=80&w=600&auto=format&fit=crop',
+  tea: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=600&auto=format&fit=crop',
+  cucumber: 'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?q=80&w=600&auto=format&fit=crop',
 };
 
 const resolveProductImageSource = (img?: string, fallbackType: string = '') => {
@@ -79,11 +79,14 @@ const resolveProductImageSource = (img?: string, fallbackType: string = '') => {
   }
 
   const str = ((img || '') + ' ' + (fallbackType || '')).toLowerCase();
-  if (str.includes('toner') || str.includes('astringent')) {
-    return { uri: PRODUCT_IMAGE_FALLBACKS.toner };
+  if (str.includes('honey') || str.includes('oat') || str.includes('mask')) {
+    return { uri: PRODUCT_IMAGE_FALLBACKS.honey };
   }
-  if (str.includes('sunscreen') || str.includes('spf') || str.includes('sun') || str.includes('block')) {
-    return { uri: PRODUCT_IMAGE_FALLBACKS.sunscreen };
+  if (str.includes('tea') || str.includes('compress') || str.includes('mist')) {
+    return { uri: PRODUCT_IMAGE_FALLBACKS.tea };
+  }
+  if (str.includes('cucumber') || str.includes('rose')) {
+    return { uri: PRODUCT_IMAGE_FALLBACKS.cucumber };
   }
   if (str.includes('patch') || str.includes('undereye_patch')) {
     return { uri: PRODUCT_IMAGE_FALLBACKS.eye_patches };
@@ -91,20 +94,20 @@ const resolveProductImageSource = (img?: string, fallbackType: string = '') => {
   if (str.includes('eye') || str.includes('undereye') || str.includes('orbital')) {
     return { uri: PRODUCT_IMAGE_FALLBACKS.eye_cream };
   }
+  if (str.includes('toner') || str.includes('astringent')) {
+    return { uri: PRODUCT_IMAGE_FALLBACKS.toner };
+  }
+  if (str.includes('sunscreen') || str.includes('spf') || str.includes('sun') || str.includes('block')) {
+    return { uri: PRODUCT_IMAGE_FALLBACKS.sunscreen };
+  }
   if (str.includes('cleans') || str.includes('wash')) {
     return { uri: PRODUCT_IMAGE_FALLBACKS.cleanser };
   }
   if (str.includes('serum')) {
     return { uri: PRODUCT_IMAGE_FALLBACKS.serum };
   }
-  if (str.includes('honey') || str.includes('oat') || str.includes('mask')) {
+  if (str.includes('treatment') || str.includes('exfoliant') || str.includes('peel')) {
     return { uri: PRODUCT_IMAGE_FALLBACKS.treatment };
-  }
-  if (str.includes('tea') || str.includes('compress') || str.includes('mist')) {
-    return { uri: PRODUCT_IMAGE_FALLBACKS.tea };
-  }
-  if (str.includes('cucumber') || str.includes('rose')) {
-    return { uri: PRODUCT_IMAGE_FALLBACKS.cucumber };
   }
 
   return { uri: PRODUCT_IMAGE_FALLBACKS.moisturizer };
@@ -388,7 +391,7 @@ const defaultHomeRemediesSteps = [
     duration: '15 min',
     productName: 'Raw Honey & Colloidal Oatmeal Pack',
     productBrand: 'Natural Home Remedy',
-    productImage: '/products/treatment.jpg',
+    productImage: '/products/honey.jpg',
     productPrice: 'DIY Kitchen Craft',
     productType: 'Soothing Pack',
     reason: 'Raw honey acts as a natural humectant and colloidal oats soothe skin inflammation.',
@@ -415,7 +418,7 @@ const defaultHomeRemediesSteps = [
     duration: '10 min',
     productName: 'Chilled Green Tea & Aloe Vera Mist',
     productBrand: 'Natural Home Remedy',
-    productImage: '/products/toner.jpg',
+    productImage: '/products/tea.jpg',
     productPrice: 'DIY Kitchen Craft',
     productType: 'Antioxidant Compress',
     reason: 'Rich in catechins (EGCG) that regulate excess oil production and reduce redness.',
@@ -442,7 +445,7 @@ const defaultHomeRemediesSteps = [
     duration: '10 min',
     productName: 'Chilled Cucumber & Damask Rose Water',
     productBrand: 'Natural Home Remedy',
-    productImage: '/products/eye_cream.jpg',
+    productImage: '/products/cucumber.jpg',
     productPrice: 'DIY Kitchen Craft',
     productType: 'Eye Therapy',
     reason: 'Cucumber’s natural caffeic acid reduces fluid retention and rose water balances delicate eye-area pH.',
@@ -832,8 +835,18 @@ export default function WellnessScreen() {
       const today = new Date().toISOString().split('T')[0];
       const data = await fetchApi(`/grooming/routine?date=${today}`);
 
-      if (data && data.routine) {
+      if (data && data.routine && ((data.routine.morning && data.routine.morning.length > 0) || (data.routine.night && data.routine.night.length > 0))) {
         populateGroomingSteps(data.routine, data.progress || []);
+      } else {
+        // Automatically sync and generate routine from skin scan
+        try {
+          const gen = await fetchApi('/grooming/generate', { method: 'POST' });
+          if (gen && gen.routine) {
+            populateGroomingSteps(gen.routine, []);
+          }
+        } catch (e) {
+          // Fall back to default steps if no scan taken yet
+        }
       }
     } catch (err: any) {
       console.log('Using default grooming timeline steps:', err?.message);
@@ -1576,22 +1589,6 @@ export default function WellnessScreen() {
                 </Text>
               </TouchableOpacity>
             </ScrollView>
-
-            <TouchableOpacity
-              style={styles.syncScanBtnFlat}
-              onPress={syncGroomingRoutine}
-              disabled={isGeneratingGrooming}
-              activeOpacity={0.8}
-            >
-              {isGeneratingGrooming ? (
-                <ActivityIndicator size="small" color="#516454" />
-              ) : (
-                <Ionicons name="sync-outline" size={13} color="#516454" />
-              )}
-              <Text style={styles.syncScanBtnFlatText}>
-                {isGeneratingGrooming ? 'Syncing...' : 'Sync with Skin Scan'}
-              </Text>
-            </TouchableOpacity>
           </View>
 
           {/* Section 100% Completion Celebration Banner */}
@@ -1623,8 +1620,12 @@ export default function WellnessScreen() {
             {currentSteps.length === 0 ? (
               <View style={styles.emptyGroomingFlat}>
                 <Text style={{ fontSize: 30, marginBottom: 8 }}>🌿</Text>
-                <Text style={styles.emptyGroomingTitle}>No steps available for this section.</Text>
-                <Text style={styles.emptyGroomingSub}>Tap "Sync with Skin Scan" above to populate all sections.</Text>
+                <Text style={styles.emptyGroomingTitle}>
+                  {isGeneratingGrooming ? 'Syncing your personalized routine...' : 'No steps available for this section.'}
+                </Text>
+                <Text style={styles.emptyGroomingSub}>
+                  {isGeneratingGrooming ? 'Analyzing latest skin biomarkers...' : 'Complete a skin scan to populate your synchronized routine.'}
+                </Text>
               </View>
             ) : (
               currentSteps.map((step, index) => {
@@ -3749,24 +3750,6 @@ const styles = StyleSheet.create({
   },
   flatTabsRow: {
     marginBottom: 14,
-  },
-  syncScanBtnFlat: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: '#FAF7F2',
-    borderWidth: 1,
-    borderColor: '#E0E2DF',
-    alignSelf: 'flex-start',
-    marginTop: 8,
-  },
-  syncScanBtnFlatText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#516454',
   },
   flatCompletionBanner: {
     backgroundColor: '#E8F4EC',

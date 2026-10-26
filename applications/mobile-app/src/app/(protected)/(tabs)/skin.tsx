@@ -431,25 +431,47 @@ export default function SkinScreen() {
     let iconName = defaultIcon;
     let iconColor = color;
     let iconBgColor = bgColor || "#F9F6F0";
-    let isProduct = rec.category === 'SKINCARE' || rec.category === 'HOME_CARE';
-    let imageUrl = "https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=200&auto=format&fit=crop";
+    let isProduct = rec.category === 'SKINCARE' || rec.category === 'HOMEREMEDIES' || rec.category === 'HOME_CARE';
     
-    const typeUpper = (rec.recommendationType || rec.title || "").toUpperCase();
+    let instr: any = {};
+    try { instr = JSON.parse(rec.instructions || '{}'); } catch(e) {}
+
+    const typeUpper = ((rec.recommendationType || '') + ' ' + (rec.title || '') + ' ' + (instr.name || '')).toUpperCase();
     
-    if (typeUpper.includes("WASH") || typeUpper.includes("CLEANS")) {
-      imageUrl = "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=200&auto=format&fit=crop";
+    let imageUrl = "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=300&auto=format&fit=crop";
+    
+    if (typeUpper.includes("HONEY") || typeUpper.includes("OAT") || typeUpper.includes("DIY MASK")) {
+      imageUrl = "https://images.unsplash.com/photo-1587049352846-4a222e784d38?q=80&w=300&auto=format&fit=crop";
     }
-    else if (typeUpper.includes("MOISTURIZ") || typeUpper.includes("CREAM")) {
-      imageUrl = "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=200&auto=format&fit=crop";
+    else if (typeUpper.includes("TEA") || typeUpper.includes("MIST") || typeUpper.includes("COMPRESS")) {
+      imageUrl = "https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=300&auto=format&fit=crop";
     }
-    else if (typeUpper.includes("SUN") || typeUpper.includes("SPF")) {
-      imageUrl = "https://images.unsplash.com/photo-1526366003456-b6a2569fd65e?q=80&w=200&auto=format&fit=crop";
+    else if (typeUpper.includes("CUCUMBER") || typeUpper.includes("ROSE")) {
+      imageUrl = "https://images.unsplash.com/photo-1604977042946-1eecc30f269e?q=80&w=300&auto=format&fit=crop";
+    }
+    else if (typeUpper.includes("PATCH") || typeUpper.includes("UNDEREYE_PATCH")) {
+      imageUrl = "https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=300&auto=format&fit=crop";
+    }
+    else if (typeUpper.includes("EYE") || typeUpper.includes("ORBITAL")) {
+      imageUrl = "https://images.unsplash.com/photo-1567928269937-ae146e45b428?q=80&w=300&auto=format&fit=crop";
+    }
+    else if (typeUpper.includes("TONER") || typeUpper.includes("ASTRINGENT")) {
+      imageUrl = "https://images.unsplash.com/photo-1608248597263-00079e96147c?q=80&w=300&auto=format&fit=crop";
+    }
+    else if (typeUpper.includes("SUN") || typeUpper.includes("SPF") || typeUpper.includes("BLOCK")) {
+      imageUrl = "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=300&auto=format&fit=crop";
+    }
+    else if (typeUpper.includes("WASH") || typeUpper.includes("CLEANS")) {
+      imageUrl = "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=300&auto=format&fit=crop";
     }
     else if (typeUpper.includes("SERUM") || typeUpper.includes("ACID")) {
-      imageUrl = "https://images.unsplash.com/photo-1629198688000-71f23e745b6e?q=80&w=200&auto=format&fit=crop";
+      imageUrl = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=300&auto=format&fit=crop";
     }
-    else if (typeUpper.includes("MASK") || typeUpper.includes("COMPRESS")) {
-      imageUrl = "https://images.unsplash.com/photo-1596755389378-c11ddece8dc7?q=80&w=200&auto=format&fit=crop";
+    else if (typeUpper.includes("TREATMENT") || typeUpper.includes("EXFOLIANT") || typeUpper.includes("PEEL")) {
+      imageUrl = "https://images.unsplash.com/photo-1617897903246-719242758050?q=80&w=300&auto=format&fit=crop";
+    }
+    else if (typeUpper.includes("MOISTURIZ") || typeUpper.includes("LOTION") || typeUpper.includes("CREAM")) {
+      imageUrl = "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?q=80&w=300&auto=format&fit=crop";
     }
     else if (typeUpper.includes("HYDRAT") || typeUpper.includes("WATER") || typeUpper.includes("DRINK")) {
       iconName = "water";

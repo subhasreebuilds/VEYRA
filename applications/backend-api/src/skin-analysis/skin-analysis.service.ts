@@ -146,8 +146,10 @@ export class SkinAnalysisService {
         const fields = extractFields(rec, 'Home Care Advice');
         const img = (() => {
           const t = (fields.title || '').toUpperCase();
-          if (t.includes('EYE') || t.includes('CUCUMBER')) return '/products/eye_cream.jpg';
-          if (t.includes('TEA') || t.includes('TONER') || t.includes('MIST')) return '/products/toner.jpg';
+          if (t.includes('HONEY') || t.includes('OAT') || t.includes('MASK')) return '/products/honey.jpg';
+          if (t.includes('TEA') || t.includes('MIST') || t.includes('COMPRESS')) return '/products/tea.jpg';
+          if (t.includes('CUCUMBER') || t.includes('ROSE')) return '/products/cucumber.jpg';
+          if (t.includes('EYE') || t.includes('PATCH')) return '/products/eye_patches.jpg';
           return '/products/treatment.jpg';
         })();
         const created = await this.prisma.skinRecommendation.create({

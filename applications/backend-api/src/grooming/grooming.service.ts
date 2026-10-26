@@ -33,8 +33,13 @@ export class GroomingService {
       });
     }
 
-    // Auto-generate if not created yet and skin scan exists
-    if (!routine) {
+    // Always keep synced: auto-generate if not created yet OR if a newer skin scan exists
+    const latestScan = await this.prisma.skinScan.findFirst({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!routine || (latestScan && routine.updatedAt < latestScan.createdAt)) {
       try {
         const generated = await this.generateRoutine(userId);
         routine = { routineData: generated.routine } as any;
@@ -132,8 +137,10 @@ export class GroomingService {
           const reason = typeof rec === 'string' ? rec : (rec.reason || 'Natural remedy based on your skin condition.');
           const img = (() => {
             const t = title.toUpperCase();
-            if (t.includes('EYE') || t.includes('CUCUMBER')) return '/products/eye_cream.jpg';
-            if (t.includes('TEA') || t.includes('TONER') || t.includes('MIST')) return '/products/toner.jpg';
+            if (t.includes('HONEY') || t.includes('OAT') || t.includes('MASK')) return '/products/honey.jpg';
+            if (t.includes('TEA') || t.includes('MIST') || t.includes('COMPRESS')) return '/products/tea.jpg';
+            if (t.includes('CUCUMBER') || t.includes('ROSE')) return '/products/cucumber.jpg';
+            if (t.includes('EYE') || t.includes('PATCH')) return '/products/eye_patches.jpg';
             return '/products/treatment.jpg';
           })();
 
@@ -168,21 +175,21 @@ export class GroomingService {
           type: 'DIY MASK',
           description: 'Mix 1 tbsp raw honey with 1 tbsp finely ground oatmeal. Apply to clean face for 15 minutes, then rinse gently with lukewarm water.',
           reason: 'Calms superficial redness, replenishes moisture, and gently soothes inflamed pores.',
-          img: '/products/treatment.jpg'
+          img: '/products/honey.jpg'
         },
         {
           title: 'Green Tea & Botanical Soothing Compress',
           type: 'COMPRESS',
           description: 'Dip clean cotton pads into chilled organic green tea and place over cheeks and forehead for 10 minutes.',
           reason: 'Rich in botanical antioxidants (EGCG) to reduce redness and regulate daytime sebum.',
-          img: '/products/toner.jpg'
+          img: '/products/tea.jpg'
         },
         {
           title: 'Chilled Cucumber & Rose Water Under-Eye Therapy',
           type: 'EYE CARE',
           description: 'Rest chilled cucumber rounds dipped in pure rose water over eyelids for 10 minutes to drain lymphatic fluid.',
           reason: 'De-puffs tired eyes, drains lymphatic fluid, and cools delicate skin.',
-          img: '/products/eye_cream.jpg'
+          img: '/products/cucumber.jpg'
         }
       ];
 
@@ -402,8 +409,10 @@ export class GroomingService {
 
       const img = instr.imageUrl || (() => {
         const t = (rec.title || '').toUpperCase();
-        if (t.includes('EYE') || t.includes('CUCUMBER')) return '/products/eye_cream.jpg';
-        if (t.includes('TEA') || t.includes('TONER') || t.includes('MIST')) return '/products/toner.jpg';
+        if (t.includes('HONEY') || t.includes('OAT') || t.includes('MASK')) return '/products/honey.jpg';
+        if (t.includes('TEA') || t.includes('MIST') || t.includes('COMPRESS')) return '/products/tea.jpg';
+        if (t.includes('CUCUMBER') || t.includes('ROSE')) return '/products/cucumber.jpg';
+        if (t.includes('EYE') || t.includes('PATCH')) return '/products/eye_patches.jpg';
         return '/products/treatment.jpg';
       })();
 

@@ -43,8 +43,11 @@ export default function GroomingPage() {
       const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
       const data = await fetchApi(`/grooming/routine?date=${today}`);
 
-      if (data && data.routine) {
+      if (data && data.routine && ((data.routine.morning && data.routine.morning.length > 0) || (data.routine.night && data.routine.night.length > 0))) {
         populateSteps(data.routine, data.progress || []);
+      } else {
+        // Always automatically keep in sync with skin scan without requiring manual button press
+        handleGenerate();
       }
     } catch (err: any) {
       console.error(err);
@@ -56,14 +59,31 @@ export default function GroomingPage() {
 
   const populateSteps = (routineData: any, completedIds: string[] = []) => {
     const mapSteps = (steps: any[]) =>
-      (steps || []).map((s: any) => ({
-        ...s,
-        productImage: s.productImage || s.imageUrl || '/products/moisturizer.jpg',
-        productBrand: s.productBrand || s.brand || 'Recommended',
-        productName: s.productName || s.name || s.title,
-        reason: s.reason || s.whyChosen || s.description || '',
-        done: (completedIds || []).includes(s.id),
-      }));
+      (steps || []).map((s: any) => {
+        const typeUpper = ((s.category || '') + ' ' + (s.title || '') + ' ' + (s.productName || '')).toUpperCase();
+        const fallbackImg = (() => {
+          if (typeUpper.includes('HONEY') || typeUpper.includes('OAT') || typeUpper.includes('MASK')) return '/products/honey.jpg';
+          if (typeUpper.includes('TEA') || typeUpper.includes('MIST') || typeUpper.includes('COMPRESS')) return '/products/tea.jpg';
+          if (typeUpper.includes('CUCUMBER') || typeUpper.includes('ROSE')) return '/products/cucumber.jpg';
+          if (typeUpper.includes('PATCH') || typeUpper.includes('UNDEREYE_PATCH')) return '/products/eye_patches.jpg';
+          if (typeUpper.includes('EYE') || typeUpper.includes('ORBITAL')) return '/products/eye_cream.jpg';
+          if (typeUpper.includes('TONER') || typeUpper.includes('ASTRINGENT')) return '/products/toner.jpg';
+          if (typeUpper.includes('SUNSCREEN') || typeUpper.includes('SPF') || typeUpper.includes('BLOCK')) return '/products/sunscreen.jpg';
+          if (typeUpper.includes('CLEANSER') || typeUpper.includes('WASH')) return '/products/cleanser.jpg';
+          if (typeUpper.includes('SERUM')) return '/products/serum.jpg';
+          if (typeUpper.includes('TREATMENT') || typeUpper.includes('EXFOLIANT')) return '/products/treatment.jpg';
+          return '/products/moisturizer.jpg';
+        })();
+
+        return {
+          ...s,
+          productImage: s.productImage || s.imageUrl || fallbackImg,
+          productBrand: s.productBrand || s.brand || 'Recommended',
+          productName: s.productName || s.name || s.title,
+          reason: s.reason || s.whyChosen || s.description || '',
+          done: (completedIds || []).includes(s.id),
+        };
+      });
 
     const morning = routineData.morning || [];
     // Support both night and legacy evening
@@ -310,24 +330,6 @@ export default function GroomingPage() {
                 <span>All Day</span>
               </button>
             </div>
-
-            {/* Sync / Regenerate button */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleGenerate}
-                disabled={isGenerating}
-                className="text-xs font-bold text-[#516454] bg-white border border-[#E0E2DF] px-4 py-2 rounded-full hover:bg-[#FAF7F2] transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                {isGenerating ? (
-                  <span className="w-3 h-3 border border-[#516454] border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                )}
-                <span>Sync with Skin Scan</span>
-              </button>
-            </div>
           </div>
 
           {/* Section completion banner */}
@@ -361,8 +363,12 @@ export default function GroomingPage() {
             {currentSteps.length === 0 ? (
               <div className="p-12 text-center text-[#6B5A52] border border-dashed border-[#E8DCD2] rounded-3xl bg-white space-y-3">
                 <span className="text-3xl">🌿</span>
-                <p className="text-sm font-bold text-[#1F1916]">No steps available for this section.</p>
-                <p className="text-xs text-[#8A7970]">Click "Sync with Skin Scan" above to populate all sections.</p>
+                <p className="text-sm font-bold text-[#1F1916]">
+                  {isGenerating ? 'Syncing your personalized routine...' : 'No steps available for this section.'}
+                </p>
+                <p className="text-xs text-[#8A7970]">
+                  {isGenerating ? 'Analyzing latest biomarkers and curating products...' : 'Complete a skin scan to populate your synchronized routine.'}
+                </p>
               </div>
             ) : (
               <div className="space-y-0">

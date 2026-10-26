@@ -632,12 +632,16 @@ export default function SkinAnalysisPage() {
                     try { productData = JSON.parse(r.instructions || '{}'); } catch(e) {}
                     const typeUpper = ((r.recommendationType || '') + ' ' + (productData.name || '') + ' ' + (r.title || '')).toUpperCase();
                     const img = productData.imageUrl || (() => {
+                      if (typeUpper.includes('HONEY') || typeUpper.includes('OAT') || typeUpper.includes('MASK')) return '/products/honey.jpg';
+                      if (typeUpper.includes('TEA') || typeUpper.includes('MIST') || typeUpper.includes('COMPRESS')) return '/products/tea.jpg';
+                      if (typeUpper.includes('CUCUMBER') || typeUpper.includes('ROSE')) return '/products/cucumber.jpg';
                       if (typeUpper.includes('PATCH') || typeUpper.includes('UNDEREYE_PATCH')) return '/products/eye_patches.jpg';
                       if (typeUpper.includes('EYE') || typeUpper.includes('UNDEREYE')) return '/products/eye_cream.jpg';
                       if (typeUpper.includes('TONER') || typeUpper.includes('ASTRINGENT')) return '/products/toner.jpg';
                       if (typeUpper.includes('SUNSCREEN') || typeUpper.includes('SPF') || typeUpper.includes('BLOCK')) return '/products/sunscreen.jpg';
                       if (typeUpper.includes('CLEANSER') || typeUpper.includes('WASH')) return '/products/cleanser.jpg';
                       if (typeUpper.includes('SERUM')) return '/products/serum.jpg';
+                      if (typeUpper.includes('TREATMENT') || typeUpper.includes('EXFOLIANT')) return '/products/treatment.jpg';
                       return '/products/moisturizer.jpg';
                     })();
 
